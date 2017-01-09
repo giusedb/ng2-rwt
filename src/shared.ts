@@ -9,9 +9,6 @@ export function createComponentFactory(resolver: ComponentFactoryResolver, metad
 export interface IRwtModuleConfig {
   endPoint: string;
   loginFunction?: Function;  
-  types?: {
-    integer?: string;
-  }
 }
 
 

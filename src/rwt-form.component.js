@@ -13,8 +13,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var rwt_service_1 = require('./rwt.service');
+var core_1 = require("@angular/core");
+var rwt_service_1 = require("./rwt.service");
 var RwtForm = (function () {
     function RwtForm(rwt, cd) {
         this.rwt = rwt;
@@ -109,15 +109,15 @@ var RwtForm = (function () {
             alert(error);
         }.bind(this));
     };
-    RwtForm.idx = 0;
     return RwtForm;
 }());
+RwtForm.idx = 0;
 exports.RwtForm = RwtForm;
 ;
 var RwtFormInlineComponent = (function (_super) {
     __extends(RwtFormInlineComponent, _super);
     function RwtFormInlineComponent(rwt, cd) {
-        _super.call(this, rwt, cd);
+        return _super.call(this, rwt, cd) || this;
     }
     Object.defineProperty(RwtFormInlineComponent.prototype, "rwtFormInline", {
         set: function (value) {
@@ -126,25 +126,25 @@ var RwtFormInlineComponent = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object), 
-        __metadata('design:paramtypes', [Object])
-    ], RwtFormInlineComponent.prototype, "rwtFormInline", null);
-    RwtFormInlineComponent = __decorate([
-        core_1.Component({
-            selector: '[rwtFormInline]',
-            template: "\n  <form novalidate (submit)=\"submit()\">\n    {{ title }}\n    <ng-content></ng-content>\n  </form>",
-        }), 
-        __metadata('design:paramtypes', [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
-    ], RwtFormInlineComponent);
     return RwtFormInlineComponent;
 }(RwtForm));
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], RwtFormInlineComponent.prototype, "rwtFormInline", null);
+RwtFormInlineComponent = __decorate([
+    core_1.Component({
+        selector: '[rwtFormInline]',
+        template: "\n  <form novalidate (submit)=\"submit()\">\n    {{ title }}\n    <ng-content></ng-content>\n  </form>",
+    }),
+    __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
+], RwtFormInlineComponent);
 exports.RwtFormInlineComponent = RwtFormInlineComponent;
 var RwtFormTemplateComponent = (function (_super) {
     __extends(RwtFormTemplateComponent, _super);
     function RwtFormTemplateComponent(rwt, cd) {
-        _super.call(this, rwt, cd);
+        return _super.call(this, rwt, cd) || this;
     }
     Object.defineProperty(RwtFormTemplateComponent.prototype, "rwtFormTemplate", {
         set: function (value) {
@@ -153,20 +153,20 @@ var RwtFormTemplateComponent = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object), 
-        __metadata('design:paramtypes', [Object])
-    ], RwtFormTemplateComponent.prototype, "rwtFormTemplate", null);
-    RwtFormTemplateComponent = __decorate([
-        core_1.Component({
-            selector: '[rwtFormTemplate]',
-            template: 'rwt form with template {{ template }}'
-        }), 
-        __metadata('design:paramtypes', [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
-    ], RwtFormTemplateComponent);
     return RwtFormTemplateComponent;
 }(RwtForm));
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], RwtFormTemplateComponent.prototype, "rwtFormTemplate", null);
+RwtFormTemplateComponent = __decorate([
+    core_1.Component({
+        selector: '[rwtFormTemplate]',
+        template: 'rwt form with template {{ template }}'
+    }),
+    __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
+], RwtFormTemplateComponent);
 exports.RwtFormTemplateComponent = RwtFormTemplateComponent;
 function createFeModel(typeTemplates) {
     var defaultTemplates = {
@@ -177,6 +177,7 @@ function createFeModel(typeTemplates) {
         default: '<input [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ fieldName }}" type="text">',
         reference: 'reference to: {{ fieldName }}',
         id: '{{ form.obj[fieldName] }}',
+        error: '<div class="rwt-error" *ngIf="form.errors[fieldName]">{{ form.errors[fieldName] }}</div>',
     };
     typeTemplates = Lazy(defaultTemplates)
         .keys()
@@ -201,23 +202,31 @@ function createFeModel(typeTemplates) {
         });
         RwtFeModel.prototype.ngOnInit = function () {
         };
-        __decorate([
-            core_1.Input(), 
-            __metadata('design:type', String), 
-            __metadata('design:paramtypes', [String])
-        ], RwtFeModel.prototype, "rwtFeModel", null);
-        RwtFeModel = __decorate([
-            core_1.Component({
-                selector: '[rwtFeModel]',
-                inputs: ['form'],
-                template: template,
-            }), 
-            __metadata('design:paramtypes', [])
-        ], RwtFeModel);
         return RwtFeModel;
     }());
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", String),
+        __metadata("design:paramtypes", [String])
+    ], RwtFeModel.prototype, "rwtFeModel", null);
+    RwtFeModel = __decorate([
+        core_1.Component({
+            selector: '[rwtFeModel]',
+            inputs: ['form'],
+            template: template,
+        }),
+        __metadata("design:paramtypes", [])
+    ], RwtFeModel);
     return RwtFeModel;
 }
 exports.createFeModel = createFeModel;
-exports.RwtFeModelComponent = createFeModel({});
+var types = {};
+try {
+    types = require('field-types.js').types;
+    console.info('found cusrom field types for ' + Lazy(types).keys().toArray().join(', '));
+}
+catch (e) {
+    console.warn('field-types.js is not found', e);
+}
+exports.RwtFeModelComponent = createFeModel(types);
 //# sourceMappingURL=rwt-form.component.js.map

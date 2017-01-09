@@ -8,8 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var rwt_service_1 = require('./rwt.service');
+var core_1 = require("@angular/core");
+var rwt_service_1 = require("./rwt.service");
 var RwtMultiselectionOutletComponent = (function () {
     function RwtMultiselectionOutletComponent(rwt) {
         this.rwt = rwt;
@@ -38,20 +38,20 @@ var RwtMultiselectionOutletComponent = (function () {
         enumerable: true,
         configurable: true
     });
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object), 
-        __metadata('design:paramtypes', [Object])
-    ], RwtMultiselectionOutletComponent.prototype, "rwtMultiselectionOutlet", null);
-    RwtMultiselectionOutletComponent = __decorate([
-        core_1.Component({
-            selector: '[rwtMultiselectionOutlet]',
-            template: '<ng-content></ng-content>',
-            outputs: ['selected'],
-        }), 
-        __metadata('design:paramtypes', [rwt_service_1.RwtService])
-    ], RwtMultiselectionOutletComponent);
     return RwtMultiselectionOutletComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], RwtMultiselectionOutletComponent.prototype, "rwtMultiselectionOutlet", null);
+RwtMultiselectionOutletComponent = __decorate([
+    core_1.Component({
+        selector: '[rwtMultiselectionOutlet]',
+        template: '<ng-content></ng-content>',
+        outputs: ['selected'],
+    }),
+    __metadata("design:paramtypes", [rwt_service_1.RwtService])
+], RwtMultiselectionOutletComponent);
 exports.RwtMultiselectionOutletComponent = RwtMultiselectionOutletComponent;
 //# sourceMappingURL=rwt-multiselection-outlet.component.js.map

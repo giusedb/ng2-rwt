@@ -8,8 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var rwt_service_1 = require('./rwt.service');
+var core_1 = require("@angular/core");
+var rwt_service_1 = require("./rwt.service");
 var RwtSelectableDirective = (function () {
     function RwtSelectableDirective(rwt, er) {
         this.rwt = rwt;
@@ -49,24 +49,24 @@ var RwtSelectableDirective = (function () {
         this.rwt.select(this.ref);
         return false;
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object), 
-        __metadata('design:paramtypes', [Object])
-    ], RwtSelectableDirective.prototype, "rwtSelectable", null);
-    __decorate([
-        core_1.HostListener('click'), 
-        __metadata('design:type', Function), 
-        __metadata('design:paramtypes', []), 
-        __metadata('design:returntype', void 0)
-    ], RwtSelectableDirective.prototype, "click", null);
-    RwtSelectableDirective = __decorate([
-        core_1.Directive({
-            selector: '[rwtSelectable]'
-        }), 
-        __metadata('design:paramtypes', [rwt_service_1.RwtService, core_1.ElementRef])
-    ], RwtSelectableDirective);
     return RwtSelectableDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], RwtSelectableDirective.prototype, "rwtSelectable", null);
+__decorate([
+    core_1.HostListener('click'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], RwtSelectableDirective.prototype, "click", null);
+RwtSelectableDirective = __decorate([
+    core_1.Directive({
+        selector: '[rwtSelectable]'
+    }),
+    __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ElementRef])
+], RwtSelectableDirective);
 exports.RwtSelectableDirective = RwtSelectableDirective;
 //# sourceMappingURL=rwt-selectable.directive.js.map

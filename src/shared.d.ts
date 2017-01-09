@@ -3,9 +3,6 @@ export declare function createComponentFactory(resolver: ComponentFactoryResolve
 export interface IRwtModuleConfig {
     endPoint: string;
     loginFunction?: Function;
-    types?: {
-        integer?: string;
-    };
 }
 export declare class RwtModuleConfig implements IRwtModuleConfig {
     types: any;

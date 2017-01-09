@@ -3,6 +3,10 @@ import { RwtModuleConfig } from './shared';
 
 declare var rwt;
 declare var Lazy;
+declare var window;
+if (!window){
+  let window = this;
+}
 
 export interface IModel extends Object{
   modelName: string;
@@ -14,11 +18,25 @@ export interface IDecoratorFunction{
   (model: IModel): void;
 }
 
-export interface IRwtField {
+export interface IRwtFieldValidator {
+  valid?: Array<Array<string>>;
   
 }
 
-declare var window;
+export interface IRwtField {
+  id: string;
+  name?: string;
+  type?: string; 
+  readable?: boolean;
+  writable?: boolean;
+  validators?: IRwtFieldValidator;
+  to?:string;
+  widget: string;
+}
+
+export type Fields = { string: IRwtField };
+
+export type FunctionObject = {string: Function };
 
 export interface ORM {
   new(endPoint: string, loginFunction: Function);
@@ -32,7 +50,18 @@ export interface ORM {
   getModel(modelName: string):any;
   utils: {
     makeFilter(model: any, filter:any, unifier?: string): Function,
-    tzInfo: Date,
+    capitalize(name:string):string;
+    tzOffset: Date,
+    reWheelConnection: any;
+    xdr(url:string, data: any, application: string,token: string, formEncode: boolean): Promise<any>;
+    hash(x:string): string;
+    sameAs(obj:any):boolean;
+    pluralize(s:string):string;
+    cleanStorage();
+    permutations(x : any[]):any[];
+    bool(x):boolean;
+    noop()
+    transFieldType: FunctionObject;
   }
 }
 

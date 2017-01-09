@@ -1,5 +1,5 @@
 "use strict";
-var core_1 = require('@angular/core');
+var core_1 = require("@angular/core");
 function createComponentFactory(resolver, metadata) {
     var cmpClass = (function () {
         function DynamicComponent() {

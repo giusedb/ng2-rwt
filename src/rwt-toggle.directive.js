@@ -8,7 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
+var core_1 = require("@angular/core");
 var RwtToggleDirective = (function () {
     function RwtToggleDirective(cd) {
         this.cd = cd;
@@ -26,24 +26,24 @@ var RwtToggleDirective = (function () {
         this.obj[this.attrName] = !this.obj[this.attrName];
         return false;
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object), 
-        __metadata('design:paramtypes', [Object])
-    ], RwtToggleDirective.prototype, "rwtToggle", null);
-    __decorate([
-        core_1.HostListener('click'), 
-        __metadata('design:type', Function), 
-        __metadata('design:paramtypes', []), 
-        __metadata('design:returntype', void 0)
-    ], RwtToggleDirective.prototype, "click", null);
-    RwtToggleDirective = __decorate([
-        core_1.Directive({
-            selector: '[rwtToggle]',
-        }), 
-        __metadata('design:paramtypes', [core_1.ChangeDetectorRef])
-    ], RwtToggleDirective);
     return RwtToggleDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], RwtToggleDirective.prototype, "rwtToggle", null);
+__decorate([
+    core_1.HostListener('click'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], RwtToggleDirective.prototype, "click", null);
+RwtToggleDirective = __decorate([
+    core_1.Directive({
+        selector: '[rwtToggle]',
+    }),
+    __metadata("design:paramtypes", [core_1.ChangeDetectorRef])
+], RwtToggleDirective);
 exports.RwtToggleDirective = RwtToggleDirective;
 //# sourceMappingURL=rwt-toggle.directive.js.map

@@ -8,8 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var rwt_service_1 = require('./rwt.service');
+var core_1 = require("@angular/core");
+var rwt_service_1 = require("./rwt.service");
 var RwtSelectionOutletComponent = (function () {
     function RwtSelectionOutletComponent(rwt) {
         this.rwt = rwt;
@@ -29,16 +29,16 @@ var RwtSelectionOutletComponent = (function () {
     RwtSelectionOutletComponent.prototype.ngOnDestroy = function () {
         this.rwt.unbind(this.eSelection);
     };
-    RwtSelectionOutletComponent = __decorate([
-        core_1.Component({
-            selector: 'rwt-selection-outlet',
-            template: '<ng-content></ng-content>',
-            inputs: ['resource', 'persistent'],
-            outputs: ['item'],
-        }), 
-        __metadata('design:paramtypes', [rwt_service_1.RwtService])
-    ], RwtSelectionOutletComponent);
     return RwtSelectionOutletComponent;
 }());
+RwtSelectionOutletComponent = __decorate([
+    core_1.Component({
+        selector: 'rwt-selection-outlet',
+        template: '<ng-content></ng-content>',
+        inputs: ['resource', 'persistent'],
+        outputs: ['item'],
+    }),
+    __metadata("design:paramtypes", [rwt_service_1.RwtService])
+], RwtSelectionOutletComponent);
 exports.RwtSelectionOutletComponent = RwtSelectionOutletComponent;
 //# sourceMappingURL=rwt-selection-outlet.component.js.map

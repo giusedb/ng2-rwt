@@ -8,8 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var rwt_service_1 = require('./rwt.service');
+var core_1 = require("@angular/core");
+var rwt_service_1 = require("./rwt.service");
 var RwtDataComponent = (function () {
     function RwtDataComponent(rwt, cd) {
         this.persistentAttributes = [];
@@ -85,19 +85,19 @@ var RwtDataComponent = (function () {
     RwtDataComponent.prototype.ngOnDestroy = function () {
         this.orm.unbind(this.gotDataEventHandler);
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object), 
-        __metadata('design:paramtypes', [Object])
-    ], RwtDataComponent.prototype, "rwtData", null);
-    RwtDataComponent = __decorate([
-        core_1.Component({
-            selector: '[rwtData]',
-            template: '<ng-content></ng-content>',
-        }), 
-        __metadata('design:paramtypes', [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
-    ], RwtDataComponent);
     return RwtDataComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], RwtDataComponent.prototype, "rwtData", null);
+RwtDataComponent = __decorate([
+    core_1.Component({
+        selector: '[rwtData]',
+        template: '<ng-content></ng-content>',
+    }),
+    __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
+], RwtDataComponent);
 exports.RwtDataComponent = RwtDataComponent;
 //# sourceMappingURL=rwt-data.component.js.map

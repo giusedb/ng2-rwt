@@ -8,8 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var shared_1 = require('./shared');
+var core_1 = require("@angular/core");
+var shared_1 = require("./shared");
 var RwtService = (function () {
     function RwtService(config, app) {
         this.app = app;
@@ -95,11 +95,11 @@ var RwtService = (function () {
     RwtService.prototype.getMultiSelection = function (name) {
         return Lazy(this.multiSelections[name]).values().toArray();
     };
-    RwtService = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [shared_1.RwtModuleConfig, core_1.ApplicationRef])
-    ], RwtService);
     return RwtService;
 }());
+RwtService = __decorate([
+    core_1.Injectable(),
+    __metadata("design:paramtypes", [shared_1.RwtModuleConfig, core_1.ApplicationRef])
+], RwtService);
 exports.RwtService = RwtService;
 //# sourceMappingURL=rwt.service.js.map
