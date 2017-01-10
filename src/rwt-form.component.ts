@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter } from '@angular/core';
-import { ORM, RwtService, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
+import { ORM, RwtService, RwtServed, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
 
 declare var Lazy;
 
@@ -35,7 +35,7 @@ export interface IRwtFormOptions {
   verb?:string;
 }
 
-export class RwtForm implements OnInit, OnDestroy{
+export class RwtForm extends RwtServed {
   public static idx:number = 0;
   public formIdx: number;
   public obj: any;
@@ -62,20 +62,20 @@ export class RwtForm implements OnInit, OnDestroy{
   protected eventHanlders: Array<number> = [];
   
 
-  constructor(protected rwt: RwtService, protected cd: ChangeDetectorRef) {
+  constructor(rwt: RwtService, protected cd: ChangeDetectorRef) {
+    super(rwt);
     this.orm = rwt.orm;
     this.formIdx = RwtForm.idx ++;
   }
-  ngOnInit() { }
-
-  ngOnDestroy() {
-    for (let event of this.eventHanlders) {
-      console.log('events ', event);
-      this.orm.unbind(event);
-    }
-  }
 
   @Output() sent = new EventEmitter();
+
+  public get waiting () {
+    return !this.ready;
+  }
+  public set waiting (value: boolean) {
+    this.ready = !value;
+  }
 
   private updateObject(){
     if (this.values) {
@@ -358,21 +358,27 @@ export class RwtForm implements OnInit, OnDestroy{
         url = this.model.modelName + '/' + (this.isNew?'put':'post');
       }
     }
+    this.ready = false;
     orm.$sendToEndpoint(url,sendObject).then((id) => {
+      if ((id == '') && this.originalObject){
+        id = this.originalObject.id
+      }
       setTimeout((function(){
         this.rwt.get(this.model.modelName, id)
           .then((obj) => {
             this.obj = this.acquireObject(obj);
+            this.ready = true;
             try {
               this.cd.markForCheck();
             } catch(e) {}
           });
-      }).bind(this),200)
+      }).bind(this),200);
       this.errors = {};
       this.editable = false;
       this.sent.emit();
     },(errDef: IRwtValidationError) => {
       this.errors = errDef.errors;
+      this.ready = true;
     })
   }
 };
@@ -412,6 +418,10 @@ export class RwtFormTemplateComponent extends RwtForm {
 @Component({
   selector: '[rwtTableForm]',
   template: `
+    <span *ngIf="waiting">
+      Waiting ..... 
+    </span>
+    <form novalidate (submit)="submit()">
       <tr *ngIf="title">
         <th colspan="2">
           {{ title }}
@@ -420,7 +430,9 @@ export class RwtFormTemplateComponent extends RwtForm {
       <tr *ngFor="let field of fields">
         <td><label for="{{ field.id }}"><b>{{ field.name }}</b></label></td>
         <td [rwtFeModel]="field.id" [form]="this"></td>
-      </tr> 
+      </tr>
+      <input type="submit" [hidden]="true">
+    </form>
   `,
 })
 export class RwtTableFormComponent extends RwtForm {

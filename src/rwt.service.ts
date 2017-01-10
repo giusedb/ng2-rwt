@@ -1,4 +1,4 @@
-import { Injectable, ApplicationRef, Optional } from '@angular/core';
+import { Injectable, ApplicationRef, Optional, OnDestroy } from '@angular/core';
 import { RwtModuleConfig } from './shared';
 
 declare var rwt;
@@ -174,5 +174,19 @@ export class RwtService{
 
   public getMultiSelection(name: string): Array<any> {
     return Lazy(this.multiSelections[name]).values().toArray();
+  }
+}
+
+export class RwtServed  implements OnDestroy{
+  protected eventHandlers: number[] = [];
+  protected waiting: boolean = false;
+  constructor(protected rwt: RwtService) { }
+
+  protected on (eventName:string, eventHandler: Function) {
+    this.eventHandlers.push(this.rwt.on(eventName, eventHandler));
+  }
+
+  ngOnDestroy() {
+    this.eventHandlers.forEach(<any>this.rwt.unbind);
   }
 }
