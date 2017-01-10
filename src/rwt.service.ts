@@ -20,7 +20,12 @@ export interface IDecoratorFunction{
 
 export interface IRwtFieldValidator {
   valid?: Array<Array<string>>;
-  
+  min?:number;
+  max?:number;
+  minlength?:number;
+  maxlength?:number;
+  pattern?:string
+  required?:boolean;
 }
 
 export interface IRwtField {
@@ -31,7 +36,12 @@ export interface IRwtField {
   writable?: boolean;
   validators?: IRwtFieldValidator;
   to?:string;
-  widget: string;
+  widget?: string;
+}
+
+export interface IRwtValidationError {
+  _resource: string;
+  errors: any;
 }
 
 export type Fields = { string: IRwtField };
