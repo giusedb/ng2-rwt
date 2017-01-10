@@ -59,7 +59,6 @@ export class RwtForm extends RwtServed {
   protected verb: string;
   protected originalObject: any;
   private transFieldFunction:any = {};
-  protected eventHanlders: Array<number> = [];
   
 
   constructor(rwt: RwtService, protected cd: ChangeDetectorRef) {

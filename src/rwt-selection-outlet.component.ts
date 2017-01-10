@@ -1,32 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { RwtService } from './rwt.service';
+import { RwtService, RwtServed } from './rwt.service';
 
 @Component({
   selector: 'rwt-selection-outlet',
-  template: '<ng-content></ng-content>',
+  template: '<template [ngIf]="item"><ng-content></ng-content></template>',
   inputs: ['resource','persistent'],
   outputs: ['item'],
 })
-export class RwtSelectionOutletComponent implements OnInit {
+export class RwtSelectionOutletComponent extends RwtServed implements OnInit {
   public item: any=null;
   public resource: string;
-  private eSelection: number;
   public persistent: boolean = false;
 
-  constructor(private rwt: RwtService) {  }
+  constructor(rwt: RwtService) { 
+    super(rwt);
+  }
   
   ngOnInit() {
     let self = this;
     this.item = this.rwt.getSelectionFor(this.resource);
-    this.eSelection = this.rwt.on('selected-' + this.resource, function(item){
+    this.on('selected-' + this.resource, function(item){
       self.item = item;
     });
     if (this.persistent !== false) {
       this.rwt.makePersistentSelection(this.resource);
     }
-  }
-
-  ngOnDestroy() {
-    this.rwt.unbind(this.eSelection);
   }
 }

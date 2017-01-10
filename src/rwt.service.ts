@@ -4,6 +4,7 @@ import { RwtModuleConfig } from './shared';
 declare var rwt;
 declare var Lazy;
 declare var window;
+
 if (!window){
   let window = this;
 }
@@ -72,6 +73,7 @@ export interface ORM {
     bool(x):boolean;
     noop()
     transFieldType: FunctionObject;
+    mock():any;
   }
 }
 
@@ -135,6 +137,7 @@ export class RwtService{
         }
       });
     }
+    return {};
   }
 
   public toggleMulti(name: string, obj: any) {
