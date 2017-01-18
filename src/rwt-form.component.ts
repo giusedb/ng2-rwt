@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter } from '@angular/core';
 import { ORM, RwtService, RwtServed, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
+import { templateWidgets } from 'type-widgets';
 
 declare var Lazy;
 
@@ -59,7 +60,7 @@ export class RwtForm extends RwtServed {
   protected verb: string;
   protected originalObject: any;
   private transFieldFunction:any = {};
-  
+
 
   constructor(rwt: RwtService, protected cd: ChangeDetectorRef) {
     super(rwt);
@@ -214,7 +215,7 @@ export class RwtForm extends RwtServed {
     this.title = attributes.title || null;
     this.showFields = attributes.showFields || null;
     this.extraFields = attributes.fieldDefs || null;
-    this.values = attributes.values || null;
+    this.values = attributes.values || {};
     this.verb = this.verb || null;
     if (attributes.fields){
       this.gotModel({
@@ -261,10 +262,10 @@ export class RwtForm extends RwtServed {
     if (value != this.edit) {
       let numChoiches = Lazy(this.fields)
         .filter((field) => (
-          ((field.type === 'reference') 
-          || field.validators.valid) 
+          ((field.type === 'reference')
+          || field.validators.valid)
           && (field.writable)))
-        .size()
+        .size();
       // fetching choiches for references
       for (let field of this.fields){
         if ((field.type === 'reference') && (field.writable)){
@@ -289,7 +290,7 @@ export class RwtForm extends RwtServed {
     }
   }
 
-  gotModel(model: any, callBack?:Function){
+  gotModel(model: any, callBack?: Function){
     this.model = model;
     // copy original model fields
     this.allFields = Lazy(model.fields).toObject();
@@ -297,6 +298,7 @@ export class RwtForm extends RwtServed {
       this.showFields = model.fieldsOrder;
     } // else fields remain user defined
 
+    // tslint:disable-next-line:no-unused-expression
     callBack && callBack();
   }
 
@@ -348,7 +350,7 @@ export class RwtForm extends RwtServed {
       .zip(sendValues)
       .filter((x) => x[1] !== undefined)
       .toObject();
-    let endPoint = orm.$orm.connection.options.endPoint;
+    let endPoint = orm.$orm.connection.cachedStatus.endPoint;
     let url = null;
     if (this.model) {
       if (this.verb) {
@@ -376,7 +378,7 @@ export class RwtForm extends RwtServed {
       this.editable = false;
       this.sent.emit();
     },(errDef: IRwtValidationError) => {
-      this.errors = errDef.errors;
+      this.errors = errDef.errors || {};
       this.ready = true;
     })
   }
@@ -384,6 +386,7 @@ export class RwtForm extends RwtServed {
 
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: '[rwtFormInline]',
   template: `
   <form novalidate (submit)="submit()">
@@ -445,12 +448,16 @@ export class RwtTableFormComponent extends RwtForm {
 }
 
 
-export function createFeModel(editableTemplates: any, staticTemplates: any): Type<any>{
+export function createFeModel(editableTemplates: any = {}, staticTemplates: any = {}): Type<any>{
+  // editable templates
   let defaultTemplates = {
+    // tslint:disable-next-line:max-line-length
     integer: '<input [required]="required" [min]="min" [max]="max" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="number">',
     float: '<input [required]="required" [min]="min" [max]="max" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="number">',
+    // tslint:disable-next-line:max-line-length
     boolean: '<input [required]="required" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="checkbox">',
     text: '<textarea [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [required]="required" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}"></textarea>',
+    // tslint:disable-next-line:max-line-length
     default: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="text">',
     id: '{{ form.obj[fieldName] }}',
     choices: `<select [required]="required" [(ngModel)]="form.obj[fieldName]">
@@ -458,19 +465,34 @@ export function createFeModel(editableTemplates: any, staticTemplates: any): Typ
               </select>`,
     date: '<input [required]="required" type="date" [(ngModel)]="form.obj[fieldName]">',
     error: '<div class="rwt-error" *ngIf="form.edit && form.errors[fieldName]">{{ form.errors[fieldName] }}</div>',
-  } 
+    // tslint:disable-next-line:max-line-length
+    password: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="password">',
+  }
+
   let typeTemplates = Lazy(defaultTemplates)
     .keys()
     .concat(Lazy(editableTemplates).keys())
     .unique()
-    .map((fieldType:string) => [fieldType, (fieldType in editableTemplates) ? editableTemplates[fieldType] : defaultTemplates[fieldType]])
-    .toObject(); 
+    .map((fieldType: string) => [fieldType, (fieldType in editableTemplates) ? editableTemplates[fieldType] : defaultTemplates[fieldType]])
+    .toObject();
 
-  let errorTemplate:string = typeTemplates.error;  
+  let errorTemplate: string = typeTemplates.error;
   let defaultWidget = typeTemplates.default;
   delete typeTemplates.error;
   delete typeTemplates.default;
-  let fieldTypeTemplates = Lazy(typeTemplates).map((v,k) => '<template ngSwitchCase="' + k + '">' + v + '</template>\n').toString();
+  let fieldTypeTemplates = Lazy(typeTemplates).map((v, k) => '<template ngSwitchCase="' + k + '">' + v + '</template>\n').toString();
+
+  // static templates
+  var defaultStatic = '{{ form.obj[fieldName]}}';
+  if ('default' in staticTemplates) {
+    defaultStatic = staticTemplates.default;
+    delete staticTemplates.default;
+  }
+  let staticTemplate = Lazy(staticTemplates)
+    .map((template, fieldName) => '<template ngSwitchCase="' + fieldName + '">' + template + '</template>\n')
+    .toString();
+
+  console.log(staticTemplate);
 
   let template = `
       <template [ngIf]="form.ready">
@@ -478,21 +500,31 @@ export function createFeModel(editableTemplates: any, staticTemplates: any): Typ
           <span [ngSwitch]="field.widget">
         `
         + fieldTypeTemplates +
-        ` <template ngSwitchDefault>` + defaultWidget + `</template>
+          ` <template ngSwitchDefault>` + defaultWidget + `</template>
           </span>
         </template>
-        <template [ngIf]="!(form.edit && field.writable) && form.obj">{{ form.obj[fieldName]}}</template>
+        <template [ngIf]="!(form.edit && field.writable) && form.obj">
+          <span [ngSwitch]="field.widget">`
+            + staticTemplate +
+          ` <template ngSwitchDefault>` + 
+             defaultStatic +
+            `</template>
+          </span>
+        </template>
         <template [ngIf]="form.errors[fieldName]">` + errorTemplate + `</template>
       </template>
     `
   @Component({
+    // tslint:disable-next-line:component-selector
     selector: '[rwtFeModel]',
+    // tslint:disable-next-line:use-input-property-decorator
     inputs: ['form'],
-    template: template, 
+    template: template,
   })
+  // tslint:disable-next-line:component-class-suffix
   class RwtFeModel implements OnInit {
     public form: RwtForm;
-    public field:IRwtField;
+    public field: IRwtField;
     public fieldName: string;
     public min: number;
     public max: number;
@@ -501,9 +533,18 @@ export function createFeModel(editableTemplates: any, staticTemplates: any): Typ
     public maxlength: number;
     public pattern: string;
 
+
+    public set value(val) {
+      this.form.obj[this.fieldName] = val;
+    }
+    public get value() {
+      return this.form.obj[this.fieldName];
+    }
+
     @Input() set rwtFeModel (value: string) {
       this.fieldName = value;
       this.field = this.form.allFields[value];
+      this.value = this.form.obj[value];
       // if field has validators
       // assuming them as part of Component
       let names = {
@@ -514,10 +555,11 @@ export function createFeModel(editableTemplates: any, staticTemplates: any): Typ
         maxlength: 1,
         pattern: 1,
       };
-      if (this.field.validators){
-        for (let name in this.field.validators){
-          if (name in names)
+      if (this.field.validators) {
+        for (let name in this.field.validators) {
+          if (name in names) {
             this[name] = this.field.validators[name];
+          }
         }
       }
     }
@@ -526,13 +568,19 @@ export function createFeModel(editableTemplates: any, staticTemplates: any): Typ
 
     }
   }
-  return RwtFeModel
+  return RwtFeModel;
 }
-var types = {}
-try {
-  types = require('type-widgets.js').types;
-  console.info('found cusrom field types for ' + Lazy(types).keys().toArray().join(', '));
+let types = {};
+let statics = {};
+/*try {
+  var tw = require('type-widgets.js');
+  types = tw.templateWidgets;
+  if (tw.templateStatics){
+    statics = tw.templateStatics;
+  }
+  console.info('found custom field types for ' + Lazy(types).keys().toArray().join(', '));
 } catch (e) {
   console.warn('field-types.js is not found', e);
 }
-export const RwtFeModelComponent: Type<any> = createFeModel(types);
+*/
+export const RwtFeModelComponent: Type<any> = createFeModel(types, statics);

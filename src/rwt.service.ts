@@ -49,6 +49,12 @@ export type Fields = { string: IRwtField };
 
 export type FunctionObject = {string: Function };
 
+export interface ILoginResult {
+  status: string;
+  error?: string;
+  userid?:number;
+}
+
 export interface ORM {
   new(endPoint: string, loginFunction: Function);
   get (modelName : string, ids: Array<number>): Promise<any>;
@@ -57,23 +63,27 @@ export interface ORM {
   addPersistentAttributes(modelName: string, attributes: Array<string>): void;
   on(eventName: string, eventHandler: Function);
   emit(eventName: string, [args]): number;
-  unbind(handlerId: number):number;
-  getModel(modelName: string):any;
-  utils: {
+  unbind(handlerId: number): number;
+  getModel(modelName: string): any;
+  getLoggedUser(): Promise<any>;
+  // tslint:disable-next-line:member-ordering
+  login(username:string, password:string):Promise<ILoginResult>;
+  logout(url?:string):Promise<void>;
+  connect():Promise<number>;  utils: {
     makeFilter(model: any, filter:any, unifier?: string): Function,
-    capitalize(name:string):string;
+    capitalize(name: string): string;
     tzOffset: Date,
     reWheelConnection: any;
-    xdr(url:string, data: any, application: string,token: string, formEncode: boolean): Promise<any>;
+    xdr(url: string, data: any, application: string,token: string, formEncode: boolean): Promise<any>;
     hash(x:string): string;
-    sameAs(obj:any):boolean;
-    pluralize(s:string):string;
+    sameAs(obj:any): boolean;
+    pluralize(s:string): string;
     cleanStorage();
-    permutations(x : any[]):any[];
-    bool(x):boolean;
-    noop()
+    permutations(x: any[]): any[];
+    bool(x): boolean;
+    noop();
     transFieldType: FunctionObject;
-    mock():any;
+    mock(): any;
   }
 }
 
