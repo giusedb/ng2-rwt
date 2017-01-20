@@ -1,12 +1,9 @@
 import { OnInit } from '@angular/core';
-import { RwtService } from './rwt.service';
-export declare class RwtSelectionOutletComponent implements OnInit {
-    private rwt;
+import { RwtService, RwtServed } from './rwt.service';
+export declare class RwtSelectionOutletComponent extends RwtServed implements OnInit {
     item: any;
     resource: string;
-    private eSelection;
     persistent: boolean;
     constructor(rwt: RwtService);
     ngOnInit(): void;
-    ngOnDestroy(): void;
 }

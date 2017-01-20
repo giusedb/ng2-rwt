@@ -1,5 +1,4 @@
-import { ModuleWithProviders } from '@angular/core';
-import { IRwtModuleConfig } from './src/shared';
+import { ModuleWithProviders, Type } from '@angular/core';
 export * from './src/rwt.service';
 export * from './src/shared';
 export * from './src/rwt-data.component';
@@ -8,6 +7,7 @@ export * from './src/rwt-selection-outlet.component';
 export * from './src/rwt-toggle.directive';
 export * from './src/rwt-multiselection-outlet.component';
 export * from './src/rwt-multiselectable.directive';
-export declare class RwtModule {
-    static forRoot(config: IRwtModuleConfig): ModuleWithProviders;
-}
+export * from './src/rwt-form.component';
+export declare function getImports(extraModules: Array<any>): Array<any>;
+export declare function createModule(extraModules?: Array<any>): Type<any> | ModuleWithProviders | any;
+export declare let RwtModule: any;

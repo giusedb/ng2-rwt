@@ -1,4 +1,4 @@
-import { Injectable, ApplicationRef, Optional, OnDestroy } from '@angular/core';
+import { Injectable, ApplicationRef, Optional, OnDestroy, ViewContainerRef } from '@angular/core';
 import { RwtModuleConfig } from './shared';
 
 declare let rwt;

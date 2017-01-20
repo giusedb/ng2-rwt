@@ -10,6 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var shared_1 = require("./shared");
+if (!window) {
+    // tslint:disable-next-line:no-shadowed-variable
+    var window_1 = this;
+}
 var RwtService = (function () {
     function RwtService(config, app) {
         this.app = app;
@@ -19,13 +23,13 @@ var RwtService = (function () {
         var orm = this.orm = new rwt(config.endPoint, config.loginFunction);
         window.orm = orm;
         orm.on('got-data', function () {
-            console.info('tick data');
             app.tick();
         });
         this.on = orm.on.bind(orm);
         this.get = orm.get.bind(orm);
         this.emit = orm.emit.bind(orm);
         this.unbind = orm.unbind.bind(orm);
+        orm.unbind(orm.$orm.validationEvent);
     }
     RwtService.prototype.select = function (obj) {
         var resource = obj.constructor.modelName;
@@ -52,6 +56,7 @@ var RwtService = (function () {
         var key = 'pS:' + resource;
         if (key in localStorage) {
             var self_1 = this;
+            // tslint:disable-next-line:radix
             var ids = parseInt(localStorage[key]);
             this.orm.get(resource, ids).then(function (item) {
                 if (item) {
@@ -59,6 +64,7 @@ var RwtService = (function () {
                 }
             });
         }
+        return null;
     };
     RwtService.prototype.toggleMulti = function (name, obj) {
         if (!(name in this.multiSelections)) {
@@ -102,4 +108,20 @@ RwtService = __decorate([
     __metadata("design:paramtypes", [shared_1.RwtModuleConfig, core_1.ApplicationRef])
 ], RwtService);
 exports.RwtService = RwtService;
+var RwtServed = (function () {
+    // tslint:disable-next-line:no-shadowed-variable
+    function RwtServed(rwt) {
+        this.rwt = rwt;
+        this.eventHandlers = [];
+        this.waiting = false;
+    }
+    RwtServed.prototype.on = function (eventName, eventHandler) {
+        this.eventHandlers.push(this.rwt.on(eventName, eventHandler));
+    };
+    RwtServed.prototype.ngOnDestroy = function () {
+        this.eventHandlers.forEach(this.rwt.unbind);
+    };
+    return RwtServed;
+}());
+exports.RwtServed = RwtServed;
 //# sourceMappingURL=rwt.service.js.map

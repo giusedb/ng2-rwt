@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10,32 +15,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var rwt_service_1 = require("./rwt.service");
-var RwtSelectionOutletComponent = (function () {
+var RwtSelectionOutletComponent = (function (_super) {
+    __extends(RwtSelectionOutletComponent, _super);
     function RwtSelectionOutletComponent(rwt) {
-        this.rwt = rwt;
-        this.item = null;
-        this.persistent = false;
+        var _this = _super.call(this, rwt) || this;
+        _this.item = null;
+        _this.persistent = false;
+        return _this;
     }
     RwtSelectionOutletComponent.prototype.ngOnInit = function () {
         var self = this;
         this.item = this.rwt.getSelectionFor(this.resource);
-        this.eSelection = this.rwt.on('selected-' + this.resource, function (item) {
+        this.on('selected-' + this.resource, function (item) {
             self.item = item;
         });
         if (this.persistent !== false) {
             this.rwt.makePersistentSelection(this.resource);
         }
     };
-    RwtSelectionOutletComponent.prototype.ngOnDestroy = function () {
-        this.rwt.unbind(this.eSelection);
-    };
     return RwtSelectionOutletComponent;
-}());
+}(rwt_service_1.RwtServed));
 RwtSelectionOutletComponent = __decorate([
     core_1.Component({
-        selector: 'rwt-selection-outlet',
-        template: '<ng-content></ng-content>',
+        // tslint:disable-next-line:component-selector
+        selector: 'rwt-selection-outlet,[selection-outlet]',
+        template: '<template [ngIf]="item"><ng-content></ng-content></template>',
+        // tslint:disable-next-line:use-input-property-decorator
         inputs: ['resource', 'persistent'],
+        // tslint:disable-next-line:use-output-property-decorator
         outputs: ['item'],
     }),
     __metadata("design:paramtypes", [rwt_service_1.RwtService])

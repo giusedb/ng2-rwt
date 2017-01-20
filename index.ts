@@ -7,11 +7,13 @@ import { RwtDataComponent } from './src/rwt-data.component';
 import { RwtToggleDirective } from './src/rwt-toggle.directive';
 import { RwtSelectableDirective } from './src/rwt-selectable.directive';
 import { RwtSelectionOutletComponent } from './src/rwt-selection-outlet.component';
-// tslint:disable-next-line:max-line-length
-import { RwtFormInlineComponent, RwtFeModelComponent, createFeModel, RwtTableFormComponent, /*RwtFormTemplateComponent*/ } from './src/rwt-form.component';
+import { RwtFormInlineComponent, RwtFeModelComponent, createFeModel,
+    RwtTableFormComponent, /*RwtFormTemplateComponent*/ } from './src/rwt-form.component';
 import { RwtMultiselectableDirective } from './src/rwt-multiselectable.directive';
 import { RwtMultiselectionOutletComponent } from './src/rwt-multiselection-outlet.component';
-import { RwtPermissionTableComponent } from './src/rwt-permission-table.component';
+import { RwtModalFormDirective } from './src/rwt-modal.directive';
+import { ModalModule } from 'angular2-modal';
+import { VexModalModule } from 'angular2-modal/plugins/vex';
 
 export * from './src/rwt.service';
 export * from './src/shared';
@@ -22,12 +24,13 @@ export * from './src/rwt-toggle.directive';
 export * from './src/rwt-multiselection-outlet.component';
 export * from './src/rwt-multiselectable.directive';
 export * from './src/rwt-form.component';
-export * from './src/rwt-permission-table.component';
 
 export function getImports(extraModules: Array<any>): Array<any> {
   let baseImports = [
     CommonModule,
     FormsModule,
+    VexModalModule,
+    ModalModule.forRoot(),
   ];
   if (extraModules) {
     Array.prototype.push.apply(baseImports, extraModules);
@@ -48,7 +51,7 @@ export function createModule(extraModules?: Array<any>): Type<any> | ModuleWithP
       RwtMultiselectionOutletComponent,
       RwtFeModelComponent,
       RwtTableFormComponent,
-      RwtPermissionTableComponent,
+      RwtModalFormDirective,
       /*RwtFormTemplateComponent*/
     ],
     exports: [RwtDataComponent,
@@ -60,7 +63,7 @@ export function createModule(extraModules?: Array<any>): Type<any> | ModuleWithP
       RwtMultiselectionOutletComponent,
       RwtFeModelComponent,
       RwtTableFormComponent,
-      RwtPermissionTableComponent,
+      RwtModalFormDirective,
       /*RwtFormTemplateComponent*/
     ],
   })

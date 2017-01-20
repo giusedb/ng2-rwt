@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10,29 +15,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var rwt_service_1 = require("./rwt.service");
-var RwtSelectableDirective = (function () {
+var RwtSelectableDirective = (function (_super) {
+    __extends(RwtSelectableDirective, _super);
     function RwtSelectableDirective(rwt, er) {
-        this.rwt = rwt;
-        this.er = er;
-        var self = this;
+        var _this = _super.call(this, rwt) || this;
+        _this.er = er;
+        var self = _this;
+        return _this;
     }
     Object.defineProperty(RwtSelectableDirective.prototype, "rwtSelectable", {
         set: function (value) {
             var self = this;
             this.ref = value;
-            if (this.eSelection) {
-                this.rwt.unbind(this.eSelection);
-            }
-            if (this.eUnSelection) {
-                this.rwt.unbind(this.eSelection);
-            }
-            this.eUnSelection = this.rwt.on('unselected-' + this.ref.constructor.modelName, function (ref) {
+            this.ngOnDestroy();
+            this.on('unselected-' + this.ref.constructor.modelName, function (ref) {
                 if ((ref == self.ref) && self.ref.$selected) {
                     self.ref.$selected = false;
                     self.er.nativeElement.classList.remove('rwt-selected');
                 }
             });
-            this.eSelection = this.rwt.on('selected-' + this.ref.constructor.modelName, function (ref) {
+            this.on('selected-' + this.ref.constructor.modelName, function (ref) {
                 if ((ref == self.ref) && !self.ref.$selected) {
                     self.ref.$selected = true;
                     self.er.nativeElement.classList.add('rwt-selected');
@@ -42,15 +44,12 @@ var RwtSelectableDirective = (function () {
         enumerable: true,
         configurable: true
     });
-    RwtSelectableDirective.prototype.ngOnDestroy = function () {
-        this.rwt.unbind(this.eSelection);
-    };
     RwtSelectableDirective.prototype.click = function () {
         this.rwt.select(this.ref);
         return false;
     };
     return RwtSelectableDirective;
-}());
+}(rwt_service_1.RwtServed));
 __decorate([
     core_1.Input(),
     __metadata("design:type", Object),
