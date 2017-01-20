@@ -1,42 +1,43 @@
 import { Injectable, ApplicationRef, Optional, OnDestroy } from '@angular/core';
 import { RwtModuleConfig } from './shared';
 
-declare var rwt;
+declare let rwt;
 declare var Lazy;
 declare var window;
 
-if (!window){
+if (!window) {
+  // tslint:disable-next-line:no-shadowed-variable
   let window = this;
 }
 
-export interface IModel extends Object{
+export interface IModel extends Object {
   modelName: string;
   fields: Object;
   prototype: Object;
 }
 
-export interface IDecoratorFunction{
+export interface IDecoratorFunction {
   (model: IModel): void;
 }
 
 export interface IRwtFieldValidator {
   valid?: Array<Array<string>>;
-  min?:number;
-  max?:number;
-  minlength?:number;
-  maxlength?:number;
-  pattern?:string
-  required?:boolean;
+  min?: number;
+  max?: number;
+  minlength?: number;
+  maxlength?: number;
+  pattern?: string;
+  required?: boolean;
 }
 
 export interface IRwtField {
   id: string;
   name?: string;
-  type?: string; 
+  type?: string;
   readable?: boolean;
   writable?: boolean;
   validators?: IRwtFieldValidator;
-  to?:string;
+  to?: string;
   widget?: string;
 }
 
@@ -52,12 +53,12 @@ export type FunctionObject = {string: Function };
 export interface ILoginResult {
   status: string;
   error?: string;
-  userid?:number;
+  userid?: number;
 }
 
 export interface ORM {
   new(endPoint: string, loginFunction: Function);
-  get (modelName : string, ids: Array<number>): Promise<any>;
+  get (modelName: string, ids: Array<number>): Promise<any>;
   query (modelName: string, filter: Object);
   addModelHandler(modelName: string, decorator: IDecoratorFunction): void;
   addPersistentAttributes(modelName: string, attributes: Array<string>): void;
@@ -66,30 +67,31 @@ export interface ORM {
   unbind(handlerId: number): number;
   getModel(modelName: string): any;
   getLoggedUser(): Promise<any>;
+  login(username: string, password: string): Promise<ILoginResult>;
+  logout(url?: string): Promise<void>;
+  connect(): Promise<number>;
   // tslint:disable-next-line:member-ordering
-  login(username:string, password:string):Promise<ILoginResult>;
-  logout(url?:string):Promise<void>;
-  connect():Promise<number>;  utils: {
-    makeFilter(model: any, filter:any, unifier?: string): Function,
-    capitalize(name: string): string;
-    tzOffset: Date,
-    reWheelConnection: any;
-    xdr(url: string, data: any, application: string,token: string, formEncode: boolean): Promise<any>;
-    hash(x:string): string;
-    sameAs(obj:any): boolean;
-    pluralize(s:string): string;
-    cleanStorage();
-    permutations(x: any[]): any[];
+  utils: {
     bool(x): boolean;
-    noop();
-    transFieldType: FunctionObject;
+    capitalize(name: string): string;
+    cleanStorage();
+    hash(x: string): string;
+    makeFilter(model: any, filter: any, unifier?: string): Function;
     mock(): any;
-  }
+    noop();
+    permutations(x: any[]): any[];
+    pluralize(s: string): string;
+    reWheelConnection: any;
+    sameAs(obj: any): boolean;
+    transFieldType: FunctionObject;
+    tzOffset: Date,
+    xdr(url: string, data: any, application: string, token: string, formEncode: boolean): Promise<any>;
+  };
 }
 
 @Injectable()
-export class RwtService{
-  public orm: ORM; 
+export class RwtService {
+  public orm: ORM;
   private initialized: boolean;
   private singleSelections: Object = {};
   private multiSelections: Object = {};
@@ -105,16 +107,16 @@ export class RwtService{
     let orm = this.orm = new rwt(config.endPoint, config.loginFunction);
     window.orm = orm;
     orm.on('got-data', function(){
-      console.info('tick data');
       app.tick();
     });
     this.on = orm.on.bind(orm);
     this.get = orm.get.bind(orm);
     this.emit = orm.emit.bind(orm);
     this.unbind = orm.unbind.bind(orm);
+    orm.unbind(orm.$orm.validationEvent);
   }
 
-  public select(obj: any){
+  public select(obj: any) {
     let resource = obj.constructor.modelName;
     if (this.singleSelections[resource]) { this.emit('unselected-' + resource, this.singleSelections[resource]); }
     this.singleSelections[resource] = obj;
@@ -133,25 +135,26 @@ export class RwtService{
     this.persistentSelections[resource] = true;
   }
 
-  public getSelectionFor(resource: string ):any {
-    if (resource in this.singleSelections){
+  public getSelectionFor(resource: string ): any {
+    if (resource in this.singleSelections) {
       return this.singleSelections[resource];
-    } 
+    }
     let key: string = 'pS:' + resource;
     if (key in localStorage) {
       let self = this;
-      let ids: any= parseInt(localStorage[key]);
+      // tslint:disable-next-line:radix
+      let ids: any = parseInt(localStorage[key]);
       this.orm.get(resource, ids).then(function(item: any){
-        if (item) { 
-          self.select(item); 
+        if (item) {
+          self.select(item);
         }
       });
     }
-    return {};
+    return null;
   }
 
   public toggleMulti(name: string, obj: any) {
-    if (!(name in this.multiSelections)){ 
+    if (!(name in this.multiSelections)) {
       this.multiSelections[name] = {};
     }
     if (obj.id in this.multiSelections[name]) {
@@ -166,7 +169,7 @@ export class RwtService{
 
 
   public selectMulti(name: string, obj: any) {
-    if (!(name in this.multiSelections)){ 
+    if (!(name in this.multiSelections)) {
       this.multiSelections[name] = {};
     }
     this.multiSelections[name][obj.id] = obj;
@@ -175,7 +178,7 @@ export class RwtService{
   }
 
   public unSelectMulti(name: string, obj: any) {
-    if (!(name in this.multiSelections)){ 
+    if (!(name in this.multiSelections)) {
       this.multiSelections[name] = {};
     }
     if (obj.id in this.multiSelections[name]) {
@@ -190,12 +193,13 @@ export class RwtService{
   }
 }
 
-export class RwtServed  implements OnDestroy{
+export class RwtServed  implements OnDestroy {
   protected eventHandlers: number[] = [];
   protected waiting: boolean = false;
+  // tslint:disable-next-line:no-shadowed-variable
   constructor(protected rwt: RwtService) { }
 
-  protected on (eventName:string, eventHandler: Function) {
+  protected on (eventName: string, eventHandler: Function) {
     this.eventHandlers.push(this.rwt.on(eventName, eventHandler));
   }
 

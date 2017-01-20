@@ -1,16 +1,17 @@
-import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter } from '@angular/core';
+
+// tslint:disable-next-line:max-line-length
+import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter, ViewChild, ViewChildDecorator, ElementRef } from '@angular/core';
 import { ORM, RwtService, RwtServed, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
-import { templateWidgets } from 'type-widgets';
 
 declare var Lazy;
 
 export class Choice {
-  public id:any;
+  public id: any;
   private text: string;
   constructor(element: any) {
-    if (element && (element.constructor === Array)){
+    if (element && (element.constructor === Array)) {
       this.id = element[0];
-      this.text = (element.length === 0)?this.id:element[1];
+      this.text = (element.length === 0) ? this.id : element[1];
     } else {
       this.id = element;
       this.text = element.toString();
@@ -27,17 +28,17 @@ export interface IRwtFormOptions {
   record?: number;
   object?: any;
   editable?: boolean;
-  title?:string;
+  title?: string;
   showFields?: Array<string>;
   fieldDefs?: Fields;
   values?: any;
   extraFields?: Fields;
   fields?: Array<IRwtField>;
-  verb?:string;
+  verb?: string;
 }
 
 export class RwtForm extends RwtServed {
-  public static idx:number = 0;
+  public static idx: number = 0;
   public formIdx: number;
   public obj: any;
   protected oldObj: any;
@@ -46,21 +47,21 @@ export class RwtForm extends RwtServed {
 
   protected model: any;
   protected modelDef: any;
-  protected orm:ORM;
+  protected orm: ORM;
   protected fields: Array<IRwtField>;
   protected fieldFilters: any = {};
   public allFields: Array<any>;
   protected edit: boolean = false;
   public title: string = null;
   protected showFields: Array<string>;
-  public ready:boolean = false;
+  public ready: boolean = false;
   public isNew: boolean = false;
   public extraFields: Fields;
-  public errors:any = {};
+  public errors: any = {};
   protected verb: string;
   protected originalObject: any;
-  private transFieldFunction:any = {};
-
+  private transFieldFunction: any = {};
+  @ViewChild('mainForm') protected mainForm: ElementRef;
 
   constructor(rwt: RwtService, protected cd: ChangeDetectorRef) {
     super(rwt);
@@ -68,7 +69,6 @@ export class RwtForm extends RwtServed {
     this.formIdx = RwtForm.idx ++;
   }
 
-  @Output() sent = new EventEmitter();
 
   public get waiting () {
     return !this.ready;
@@ -77,31 +77,27 @@ export class RwtForm extends RwtServed {
     this.ready = !value;
   }
 
-  private updateObject(){
+  // tslint:disable-next-line:member-ordering
+  @Output() sent = new EventEmitter();
+
+  private updateObject() {
     if (this.values) {
       // update each object key
-      Lazy(this.values).each((v,k)=> {
+      Lazy(this.values).each((v, k) => {
         this.obj[k] = v;
       });
     }
   }
 
-  private acquireObject(obj){
+  private acquireObject(obj) {
     /**
      * create an editable copy of real object
      * backup an original copy and acquire remoe references if any
      */
-    if (obj){
-      let remoteReferences = [];
+    let remoteReferences = [];
+    if (obj) {
       this.originalObject = obj;
-      this.oldObj = Lazy(obj.constructor.fields)
-        .map((field, fieldName) => {
-          let v = obj[fieldName];
-          if (field.type === 'reference'){
-            remoteReferences.push(field);
-          }
-          return [fieldName, v];
-        }).toObject();
+      this.oldObj = obj.asRaw();
     }
     // make a copy
     return Lazy(this.oldObj).toObject();
@@ -118,24 +114,24 @@ export class RwtForm extends RwtServed {
         .filter((field, fieldName) => !(fieldName in this.allFields))
         .each((field, fieldName) => {
           // setting id as field name
-          if (!("id" in field)){
+          if (!('id' in field)) {
             field.id = fieldName;
           }
           // setting name as capitalized field name
-          if (!("name" in field)){
+          if (!('name' in field)) {
             field.name = fieldName.split(' ').map(this.orm.utils.capitalize).join(' ');
           }
-          if (!("type" in field)){
-            field.widget = "string";
-            field.type = "string";
+          if (!('type' in field)) {
+            field.widget = 'string';
+            field.type = 'string';
           }
-          if (!("writable" in field) && !("readable" in field)){
+          if (!('writable' in field) && !('readable' in field)) {
             field.writable = true;
           }
       });
 
       // deep merge for each field
-      Lazy(this.extraFields).each((v,k) => {
+      Lazy(this.extraFields).each((v, k) => {
         if (typeof v === 'object') {
           let exists = false;
           if (!(k in this.allFields)) {
@@ -146,7 +142,7 @@ export class RwtForm extends RwtServed {
           v = Lazy(this.allFields[k])
             .merge(v)
             .toObject();
-        } 
+        }
         this.allFields[k] = v;
       });
       extras = Lazy(this.extraFields)
@@ -163,7 +159,7 @@ export class RwtForm extends RwtServed {
     this.fields.forEach((field) => {
       // if a field requires an fixed choice it will default to choiche widget
       if (field.validators && field.validators.valid) {
-        if (field.widget == field.type){
+        if (field.widget === field.type) {
           field.widget = 'choices';
         }
         this.choiceItems[field.id] = Lazy(field.validators.valid)
@@ -175,7 +171,7 @@ export class RwtForm extends RwtServed {
       (field) => field.type === 'reference'
     );
     let referenceLen = missingReferences.length;
-    if (referenceLen && this.originalObject){
+    if (referenceLen && this.originalObject) {
       for (let field of missingReferences){
         let val = this.originalObject['_' + field.id];
         if (val) {
@@ -196,17 +192,17 @@ export class RwtForm extends RwtServed {
     return !(referenceLen && this.originalObject);
   }
 
-  private finalize(editable:boolean) {
+  private finalize(editable: boolean) {
     /**
      * Finalizes object and field creation
      */
     this.ready = this.updateFields();
     this.updateObject();
     this.editable = editable || false;
-    this.cd.detectChanges();    
+    this.cd.detectChanges();
   }
 
-  public setAttributes(attributes: IRwtFormOptions){ 
+  public setAttributes(attributes: IRwtFormOptions) { 
     /**
      * Redefine all attributes for form rendering
      */
@@ -217,7 +213,7 @@ export class RwtForm extends RwtServed {
     this.extraFields = attributes.fieldDefs || null;
     this.values = attributes.values || {};
     this.verb = this.verb || null;
-    if (attributes.fields){
+    if (attributes.fields) {
       this.gotModel({
         fields : Lazy(attributes.fields).indexBy('id').toObject(),
         fieldsOrder: Lazy(attributes.fields).pluck('id').toArray(),
@@ -230,10 +226,10 @@ export class RwtForm extends RwtServed {
         this.obj = this.acquireObject(attributes.object);
         this.finalize(attributes.editable);
       } else if (attributes.record) {
-        let x:any = attributes.record;
+        let x: any = attributes.record;
         this.isNew = false;
         this.orm.get(attributes.resource, x).then(function(obj){
-          if (obj){
+          if (obj) {
             attributes.object = obj;
             self.setAttributes(attributes);
           } else {
@@ -257,9 +253,9 @@ export class RwtForm extends RwtServed {
     }
   }
 
-  get editable() { return this.edit }
+  get editable() { return this.edit; }
   set editable(value: boolean) {
-    if (value != this.edit) {
+    if (value !== this.edit) {
       let numChoiches = Lazy(this.fields)
         .filter((field) => (
           ((field.type === 'reference')
@@ -268,17 +264,17 @@ export class RwtForm extends RwtServed {
         .size();
       // fetching choiches for references
       for (let field of this.fields){
-        if ((field.type === 'reference') && (field.writable)){
+        if ((field.type === 'reference') && (field.writable)) {
           this.ready = false;
           this.orm.query(<any>field.to, this.fieldFilters[field.id] || {})
             .then((references) => {
               this.choiceItems[field.id] = references;
               numChoiches --;
-              if (numChoiches === 0){
+              if (numChoiches === 0) {
                 this.ready = true;
                 this.cd.markForCheck();
               }
-            })
+            });
         }
       }
       if (value) {
@@ -290,11 +286,11 @@ export class RwtForm extends RwtServed {
     }
   }
 
-  gotModel(model: any, callBack?: Function){
+  gotModel(model: any, callBack?: Function) {
     this.model = model;
     // copy original model fields
     this.allFields = Lazy(model.fields).toObject();
-    if (!this.showFields){
+    if (!this.showFields) {
       this.showFields = model.fieldsOrder;
     } // else fields remain user defined
 
@@ -309,7 +305,7 @@ export class RwtForm extends RwtServed {
   submit() {
     let orm: any = this.orm;
     function toDate(x) {
-      if (x){
+      if (x) {
         let d = new Date(x);
         return (d.getTime() + orm.utils.tzOffset) / 1000;
       }
@@ -321,48 +317,65 @@ export class RwtForm extends RwtServed {
       .toArray();
     let sendValues = sendFields.map((field) => {
       let value = this.obj[field.id];
-      if (field.widget === 'choices'){
-        return value?value.id:null;
+      if (field.widget === 'choices') {
+        return value ? value.id : null;
       }
-      switch (field.type){
+      switch (field.type) {
         case 'date': return toDate(value);
-        case 'datetime': return toDate(value);;
-        case 'boolean': { 
+        case 'datetime': return toDate(value);
+        case 'boolean': {
           switch (value) {
             case 'F': return 'F';
             case 'T': return 'T';
             case null: return null;
-            default: return Boolean(this.obj[field.id])  
+            default: return Boolean(this.obj[field.id]);
           }
-        };
-        case 'integer': return parseInt(value);
-        case 'floar': return parseFloat(value);
-        case 'reference': return value?value.id:undefined;
-        case 'string': {
-          if (field.validators.valid){ return value?value.id:null; }
-          else return value;
         }
+        // tslint:disable-next-line:no-switch-case-fall-through
+        case 'integer':
+          // tslint:disable-next-line:radix
+          return parseInt(value);
+        case 'floar': return parseFloat(value);
+        case 'reference': return value ? value.id : undefined;
+        case 'string': {
+          if (field.validators.valid) {
+            return value ? value.id : null;
+          } else {
+            return value;
+          }
+        }
+        // tslint:disable-next-line:no-switch-case-fall-through
         default: return this.obj[field.id];
       }
     });
+    // reference to original object if any
+    let originalObject: any = {};
+    if (this.originalObject) {
+      originalObject = this.originalObject.asRaw();
+    }
+    // creating object to send to server
     let sendObject = Lazy(sendFields)
       .pluck('id')
       .zip(sendValues)
-      .filter((x) => x[1] !== undefined)
+      .filter((x) => x[1] !== originalObject[x[0]])
       .toObject();
+    // this object may be without id
+    if (originalObject.id) {
+      sendObject.id = originalObject.id;
+    }
     let endPoint = orm.$orm.connection.cachedStatus.endPoint;
     let url = null;
     if (this.model) {
       if (this.verb) {
         url = this.model.modelName + '/' + this.verb;
       } else {
-        url = this.model.modelName + '/' + (this.isNew?'put':'post');
+        url = this.model.modelName + '/' + (this.isNew ? 'put' : 'post');
       }
     }
     this.ready = false;
-    orm.$sendToEndpoint(url,sendObject).then((id) => {
-      if ((id == '') && this.originalObject){
-        id = this.originalObject.id
+    orm.$sendToEndpoint(url, sendObject).then((id) => {
+      if ((id === '') && this.originalObject) {
+        id = this.originalObject.id;
       }
       setTimeout((function(){
         this.rwt.get(this.model.modelName, id)
@@ -371,16 +384,16 @@ export class RwtForm extends RwtServed {
             this.ready = true;
             try {
               this.cd.markForCheck();
-            } catch(e) {}
+            } catch (e) {}
           });
-      }).bind(this),200);
+      }).bind(this), 200);
       this.errors = {};
       this.editable = false;
       this.sent.emit();
-    },(errDef: IRwtValidationError) => {
+    }, (errDef: IRwtValidationError) => {
       this.errors = errDef.errors || {};
       this.ready = true;
-    })
+    });
   }
 };
 
@@ -395,7 +408,7 @@ export class RwtForm extends RwtServed {
   </form>`,
 })
 export class RwtFormInlineComponent extends RwtForm {
-  constructor(rwt : RwtService, cd: ChangeDetectorRef) {
+  constructor(rwt: RwtService, cd: ChangeDetectorRef) {
     super(rwt, cd);
   }
   @Input() set rwtFormInline (value: IRwtFormOptions) {
@@ -404,6 +417,7 @@ export class RwtFormInlineComponent extends RwtForm {
 }
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: '[rwtFormTemplate]',
   template: 'rwt form with template {{ template }}'
 })
@@ -418,12 +432,13 @@ export class RwtFormTemplateComponent extends RwtForm {
 }
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: '[rwtTableForm]',
   template: `
     <span *ngIf="waiting">
       Waiting ..... 
     </span>
-    <form novalidate (submit)="submit()">
+    <form novalidate (submit)="submit()" #mainForm>
       <tr *ngIf="title">
         <th colspan="2">
           {{ title }}
@@ -438,7 +453,7 @@ export class RwtFormTemplateComponent extends RwtForm {
   `,
 })
 export class RwtTableFormComponent extends RwtForm {
-  constructor(rwt : RwtService, cd: ChangeDetectorRef) {
+  constructor(rwt: RwtService, cd: ChangeDetectorRef) {
     super(rwt, cd);
   }
 
@@ -448,7 +463,7 @@ export class RwtTableFormComponent extends RwtForm {
 }
 
 
-export function createFeModel(editableTemplates: any = {}, staticTemplates: any = {}): Type<any>{
+export function createFeModel(editableTemplates: any = {}, staticTemplates: any = {}): Type<any> {
   // editable templates
   let defaultTemplates = {
     // tslint:disable-next-line:max-line-length
@@ -467,8 +482,8 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
     error: '<div class="rwt-error" *ngIf="form.edit && form.errors[fieldName]">{{ form.errors[fieldName] }}</div>',
     // tslint:disable-next-line:max-line-length
     password: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="password">',
-  }
-
+  };
+  console.log('ciao');
   let typeTemplates = Lazy(defaultTemplates)
     .keys()
     .concat(Lazy(editableTemplates).keys())
@@ -483,7 +498,7 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
   let fieldTypeTemplates = Lazy(typeTemplates).map((v, k) => '<template ngSwitchCase="' + k + '">' + v + '</template>\n').toString();
 
   // static templates
-  var defaultStatic = '{{ form.obj[fieldName]}}';
+  let defaultStatic = '{{ form.obj[fieldName]}}';
   if ('default' in staticTemplates) {
     defaultStatic = staticTemplates.default;
     delete staticTemplates.default;
@@ -506,14 +521,14 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
         <template [ngIf]="!(form.edit && field.writable) && form.obj">
           <span [ngSwitch]="field.widget">`
             + staticTemplate +
-          ` <template ngSwitchDefault>` + 
+          ` <template ngSwitchDefault>` +
              defaultStatic +
             `</template>
           </span>
         </template>
         <template [ngIf]="form.errors[fieldName]">` + errorTemplate + `</template>
       </template>
-    `
+    `;
   @Component({
     // tslint:disable-next-line:component-selector
     selector: '[rwtFeModel]',
@@ -572,15 +587,15 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
 }
 let types = {};
 let statics = {};
-/*try {
-  var tw = require('type-widgets.js');
+try {
+  let tw = require('type-widgets.js');
   types = tw.templateWidgets;
   if (tw.templateStatics){
     statics = tw.templateStatics;
   }
+  // tslint:disable-next-line:no-console
   console.info('found custom field types for ' + Lazy(types).keys().toArray().join(', '));
 } catch (e) {
   console.warn('field-types.js is not found', e);
 }
-*/
 export const RwtFeModelComponent: Type<any> = createFeModel(types, statics);

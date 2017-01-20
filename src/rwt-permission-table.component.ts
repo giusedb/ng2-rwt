@@ -1,5 +1,5 @@
-import { Input, Component, OnInit, EventEmitter, ElementRef } from '@angular/core';
-declare var Lazy;
+import { Input, Output, Component, OnInit, EventEmitter, ElementRef } from '@angular/core';
+declare let Lazy;
 
 @Component({
   selector: '[rwt-permission-table]',
@@ -30,22 +30,20 @@ declare var Lazy;
         </td>
       </tr>
   `,
-  inputs: ['rwtModel'],
-  outputs: ['saved'],
 })
 export class RwtPermissionTableComponent implements OnInit {
   private obj: any;
   private permissions: any;
   private allPermissions: Array<string> = [];
   private permissionTable: any;
-  private saved: EventEmitter<Object> = new EventEmitter();
+  @Output('saved') private saved: EventEmitter<Object> = new EventEmitter();
   private notInTable: Function;
   private groupsReady: boolean = false;
   private permissioned: any;
-  //private newGroup: any;
+  // private newGroup: any;
 
-  constructor(protected er: ElementRef) { 
-    this.notInTable = (group) => 
+  constructor(protected er: ElementRef) {
+    this.notInTable = (group) =>
       !this.permissioned.contains(group.id);
   }
 
@@ -60,13 +58,13 @@ export class RwtPermissionTableComponent implements OnInit {
       this.permissionTable = permissions;
       this.permissioned = Lazy(this.permissions).map((x) => x[0].id);
       this.groupsReady = true;
-    })
+    });
   }
 
   save() {
     this.permissionTable.save((x) => {
         this.saved.emit();
-    })
+    });
   }
 
   addUser(group) {
