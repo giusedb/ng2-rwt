@@ -5,7 +5,30 @@ export interface IRwtModuleConfig {
     loginFunction?: Function;
 }
 export declare class RwtModuleConfig implements IRwtModuleConfig {
+    /**
+     * type dicts
+     */
     types: any;
+    /**
+     * Primary rwt endPoint
+     */
     endPoint: string;
+    /**
+     * A login function
+     */
     loginFunction: Function;
+}
+export interface IError {
+    /**
+     * Exception caught by server
+     */
+    exception: string;
+    /**
+     * All traceback from server
+     */
+    traceBack: string[];
+    /**
+     * when error occurred
+     */
+    time: Date;
 }

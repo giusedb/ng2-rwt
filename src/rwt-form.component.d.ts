@@ -15,8 +15,6 @@ export interface IRwtFormOptions {
     showFields?: Array<string>;
     fieldDefs?: Fields;
     values?: any;
-    extraFields?: Fields;
-    fields?: Array<IRwtField>;
     verb?: string;
 }
 export declare class RwtForm extends RwtServed {
@@ -64,10 +62,6 @@ export declare class RwtFormInlineComponent extends RwtForm {
 export declare class RwtFormTemplateComponent extends RwtForm {
     constructor(rwt: RwtService, cd: ChangeDetectorRef);
     rwtFormTemplate: IRwtFormOptions;
-}
-export declare class RwtTableFormComponent extends RwtForm {
-    constructor(rwt: RwtService, cd: ChangeDetectorRef);
-    rwtTableForm: IRwtFormOptions;
 }
 export declare function createFeModel(editableTemplates?: any, staticTemplates?: any): Type<any>;
 export declare const RwtFeModelComponent: Type<any>;

@@ -20,7 +20,6 @@ var rwt_selection_outlet_component_1 = require("./src/rwt-selection-outlet.compo
 var rwt_form_component_1 = require("./src/rwt-form.component");
 var rwt_multiselectable_directive_1 = require("./src/rwt-multiselectable.directive");
 var rwt_multiselection_outlet_component_1 = require("./src/rwt-multiselection-outlet.component");
-var rwt_modal_directive_1 = require("./src/rwt-modal.directive");
 __export(require("./src/rwt.service"));
 __export(require("./src/shared"));
 __export(require("./src/rwt-data.component"));
@@ -68,23 +67,25 @@ function createModule(extraModules) {
                 rwt_toggle_directive_1.RwtToggleDirective,
                 rwt_selectable_directive_1.RwtSelectableDirective,
                 rwt_selection_outlet_component_1.RwtSelectionOutletComponent,
+                rwt_selectable_directive_1.RwtSelectableDirective,
                 rwt_form_component_1.RwtFormInlineComponent,
                 rwt_multiselectable_directive_1.RwtMultiselectableDirective,
                 rwt_multiselection_outlet_component_1.RwtMultiselectionOutletComponent,
                 rwt_form_component_1.RwtFeModelComponent,
-                rwt_form_component_1.RwtTableFormComponent,
-                rwt_modal_directive_1.RwtModalFormDirective,
+                rwt_selection_outlet_component_1.RwtSelectionOutletDirective,
+                rwt_toggle_directive_1.RwtSetDirective,
             ],
             exports: [rwt_data_component_1.RwtDataComponent,
                 rwt_toggle_directive_1.RwtToggleDirective,
                 rwt_selectable_directive_1.RwtSelectableDirective,
                 rwt_selection_outlet_component_1.RwtSelectionOutletComponent,
+                rwt_selectable_directive_1.RwtSelectableDirective,
                 rwt_form_component_1.RwtFormInlineComponent,
                 rwt_multiselectable_directive_1.RwtMultiselectableDirective,
                 rwt_multiselection_outlet_component_1.RwtMultiselectionOutletComponent,
                 rwt_form_component_1.RwtFeModelComponent,
-                rwt_form_component_1.RwtTableFormComponent,
-                rwt_modal_directive_1.RwtModalFormDirective,
+                rwt_selection_outlet_component_1.RwtSelectionOutletDirective,
+                rwt_toggle_directive_1.RwtSetDirective,
             ],
         })
     ], RwtModule);
@@ -93,5 +94,5 @@ function createModule(extraModules) {
 }
 exports.createModule = createModule;
 exports.RwtModule = createModule();
-console.log('RwtModule created');
-//# sourceMappingURL=ng2-rwt.js.map
+console.log("RwtModule created");
+//# sourceMappingURL=index.js.map

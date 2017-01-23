@@ -32,8 +32,6 @@ export interface IRwtFormOptions {
   showFields?: Array<string>;
   fieldDefs?: Fields;
   values?: any;
-  extraFields?: Fields;
-  fields?: Array<IRwtField>;
   verb?: string;
 }
 
@@ -213,43 +211,36 @@ export class RwtForm extends RwtServed {
     this.extraFields = attributes.fieldDefs || null;
     this.values = attributes.values || {};
     this.verb = this.verb || null;
-    if (attributes.fields) {
-      this.gotModel({
-        fields : Lazy(attributes.fields).indexBy('id').toObject(),
-        fieldsOrder: Lazy(attributes.fields).pluck('id').toArray(),
-      });
+    this.errors = {};
+    if (attributes.object) {
+      this.isNew = false;
+      this.gotModel(attributes.object.constructor);
+      this.obj = this.acquireObject(attributes.object);
       this.finalize(attributes.editable);
-    } else {
-      if (attributes.object) {
-        this.isNew = false;
-        this.gotModel(attributes.object.constructor);
-        this.obj = this.acquireObject(attributes.object);
-        this.finalize(attributes.editable);
-      } else if (attributes.record) {
-        let x: any = attributes.record;
-        this.isNew = false;
-        this.orm.get(attributes.resource, x).then(function(obj){
-          if (obj) {
-            attributes.object = obj;
-            self.setAttributes(attributes);
-          } else {
-            console.error('Object ' + attributes.resource + ' with id ' + x + ' is unaccessible');
-          }
-        }, function(error){
-          self.ready = true;
+    } else if (attributes.record) {
+      let x: any = attributes.record;
+      this.isNew = false;
+      this.orm.get(attributes.resource, x).then(function(obj){
+        if (obj) {
+          attributes.object = obj;
+          self.setAttributes(attributes);
+        } else {
+          console.error('Object ' + attributes.resource + ' with id ' + x + ' is unaccessible');
+        }
+      }, function(error){
+        self.ready = true;
+      });
+    } else if (attributes.resource) {
+      this.isNew = true;
+      this.orm.getModel(attributes.resource)
+        .then(this.gotModel.bind(this))
+        .then(function(){
+          self.obj = {};
+          self.finalize(attributes.editable);
         });
-      } else if (attributes.resource) {
-        this.isNew = true;
-        this.orm.getModel(attributes.resource)
-          .then(this.gotModel.bind(this))
-          .then(function(){
-            self.obj = {};
-            self.finalize(attributes.editable);
-          });
-      } else {
-        // form is incomplete
-        // this.finalize();
-      }
+    } else {
+      // form is incomplete
+      // this.finalize();
     }
   }
 
@@ -278,7 +269,7 @@ export class RwtForm extends RwtServed {
         }
       }
       if (value) {
-
+        this.errors = {};
       } else {
         this.obj = Lazy(this.oldObj).toObject();
       }
@@ -400,7 +391,7 @@ export class RwtForm extends RwtServed {
 
 @Component({
   // tslint:disable-next-line:component-selector
-  selector: '[rwtFormInline]',
+  selector: 'rwt-form-inline',
   template: `
   <form novalidate (submit)="submit()">
     {{ title }}
@@ -431,38 +422,6 @@ export class RwtFormTemplateComponent extends RwtForm {
   }
 }
 
-@Component({
-  // tslint:disable-next-line:component-selector
-  selector: '[rwtTableForm]',
-  template: `
-    <span *ngIf="waiting">
-      Waiting ..... 
-    </span>
-    <form novalidate (submit)="submit()" #mainForm>
-      <tr *ngIf="title">
-        <th colspan="2">
-          {{ title }}
-        </th>
-      </tr>
-      <tr *ngFor="let field of fields">
-        <td><label for="{{ field.id }}"><b>{{ field.name }}</b></label></td>
-        <td [rwtFeModel]="field.id" [form]="this"></td>
-      </tr>
-      <input type="submit" [hidden]="true">
-    </form>
-  `,
-})
-export class RwtTableFormComponent extends RwtForm {
-  constructor(rwt: RwtService, cd: ChangeDetectorRef) {
-    super(rwt, cd);
-  }
-
-  @Input() set rwtTableForm(value: IRwtFormOptions) {
-    super.setAttributes(value);
-  }
-}
-
-
 export function createFeModel(editableTemplates: any = {}, staticTemplates: any = {}): Type<any> {
   // editable templates
   let defaultTemplates = {
@@ -476,7 +435,7 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
     default: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="text">',
     id: '{{ form.obj[fieldName] }}',
     choices: `<select [required]="required" [(ngModel)]="form.obj[fieldName]">
-                  <option [value]="choice" *ngFor="let choice of form.choiceItems[fieldName]">{{ choice }}</option>
+                  <option [ngValue]="choice" *ngFor="let choice of form.choiceItems[fieldName]">{{ choice }}</option>
               </select>`,
     date: '<input [required]="required" type="date" [(ngModel)]="form.obj[fieldName]">',
     error: '<div class="rwt-error" *ngIf="form.edit && form.errors[fieldName]">{{ form.errors[fieldName] }}</div>',
@@ -585,6 +544,9 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
   }
   return RwtFeModel;
 }
+
+declare let require;
+
 let types = {};
 let statics = {};
 try {

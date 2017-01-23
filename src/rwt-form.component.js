@@ -192,46 +192,38 @@ var RwtForm = (function (_super) {
         this.extraFields = attributes.fieldDefs || null;
         this.values = attributes.values || {};
         this.verb = this.verb || null;
-        if (attributes.fields) {
-            this.gotModel({
-                fields: Lazy(attributes.fields).indexBy('id').toObject(),
-                fieldsOrder: Lazy(attributes.fields).pluck('id').toArray(),
-            });
+        this.errors = {};
+        if (attributes.object) {
+            this.isNew = false;
+            this.gotModel(attributes.object.constructor);
+            this.obj = this.acquireObject(attributes.object);
             this.finalize(attributes.editable);
         }
+        else if (attributes.record) {
+            var x_1 = attributes.record;
+            this.isNew = false;
+            this.orm.get(attributes.resource, x_1).then(function (obj) {
+                if (obj) {
+                    attributes.object = obj;
+                    self.setAttributes(attributes);
+                }
+                else {
+                    console.error('Object ' + attributes.resource + ' with id ' + x_1 + ' is unaccessible');
+                }
+            }, function (error) {
+                self.ready = true;
+            });
+        }
+        else if (attributes.resource) {
+            this.isNew = true;
+            this.orm.getModel(attributes.resource)
+                .then(this.gotModel.bind(this))
+                .then(function () {
+                self.obj = {};
+                self.finalize(attributes.editable);
+            });
+        }
         else {
-            if (attributes.object) {
-                this.isNew = false;
-                this.gotModel(attributes.object.constructor);
-                this.obj = this.acquireObject(attributes.object);
-                this.finalize(attributes.editable);
-            }
-            else if (attributes.record) {
-                var x_1 = attributes.record;
-                this.isNew = false;
-                this.orm.get(attributes.resource, x_1).then(function (obj) {
-                    if (obj) {
-                        attributes.object = obj;
-                        self.setAttributes(attributes);
-                    }
-                    else {
-                        console.error('Object ' + attributes.resource + ' with id ' + x_1 + ' is unaccessible');
-                    }
-                }, function (error) {
-                    self.ready = true;
-                });
-            }
-            else if (attributes.resource) {
-                this.isNew = true;
-                this.orm.getModel(attributes.resource)
-                    .then(this.gotModel.bind(this))
-                    .then(function () {
-                    self.obj = {};
-                    self.finalize(attributes.editable);
-                });
-            }
-            else {
-            }
         }
     };
     Object.defineProperty(RwtForm.prototype, "editable", {
@@ -265,6 +257,7 @@ var RwtForm = (function (_super) {
                     _loop_1(field);
                 }
                 if (value) {
+                    this.errors = {};
                 }
                 else {
                     this.obj = Lazy(this.oldObj).toObject();
@@ -421,7 +414,7 @@ __decorate([
 RwtFormInlineComponent = __decorate([
     core_1.Component({
         // tslint:disable-next-line:component-selector
-        selector: '[rwtFormInline]',
+        selector: 'rwt-form-inline',
         template: "\n  <form novalidate (submit)=\"submit()\">\n    {{ title }}\n    <ng-content></ng-content>\n  </form>",
     }),
     __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
@@ -455,34 +448,6 @@ RwtFormTemplateComponent = __decorate([
     __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
 ], RwtFormTemplateComponent);
 exports.RwtFormTemplateComponent = RwtFormTemplateComponent;
-var RwtTableFormComponent = (function (_super) {
-    __extends(RwtTableFormComponent, _super);
-    function RwtTableFormComponent(rwt, cd) {
-        return _super.call(this, rwt, cd) || this;
-    }
-    Object.defineProperty(RwtTableFormComponent.prototype, "rwtTableForm", {
-        set: function (value) {
-            _super.prototype.setAttributes.call(this, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return RwtTableFormComponent;
-}(RwtForm));
-__decorate([
-    core_1.Input(),
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
-], RwtTableFormComponent.prototype, "rwtTableForm", null);
-RwtTableFormComponent = __decorate([
-    core_1.Component({
-        // tslint:disable-next-line:component-selector
-        selector: '[rwtTableForm]',
-        template: "\n    <span *ngIf=\"waiting\">\n      Waiting ..... \n    </span>\n    <form novalidate (submit)=\"submit()\" #mainForm>\n      <tr *ngIf=\"title\">\n        <th colspan=\"2\">\n          {{ title }}\n        </th>\n      </tr>\n      <tr *ngFor=\"let field of fields\">\n        <td><label for=\"{{ field.id }}\"><b>{{ field.name }}</b></label></td>\n        <td [rwtFeModel]=\"field.id\" [form]=\"this\"></td>\n      </tr>\n      <input type=\"submit\" [hidden]=\"true\">\n    </form>\n  ",
-    }),
-    __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
-], RwtTableFormComponent);
-exports.RwtTableFormComponent = RwtTableFormComponent;
 function createFeModel(editableTemplates, staticTemplates) {
     if (editableTemplates === void 0) { editableTemplates = {}; }
     if (staticTemplates === void 0) { staticTemplates = {}; }
@@ -497,7 +462,7 @@ function createFeModel(editableTemplates, staticTemplates) {
         // tslint:disable-next-line:max-line-length
         default: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="text">',
         id: '{{ form.obj[fieldName] }}',
-        choices: "<select [required]=\"required\" [(ngModel)]=\"form.obj[fieldName]\">\n                  <option [value]=\"choice\" *ngFor=\"let choice of form.choiceItems[fieldName]\">{{\u00A0choice }}</option>\n              </select>",
+        choices: "<select [required]=\"required\" [(ngModel)]=\"form.obj[fieldName]\">\n                  <option [ngValue]=\"choice\" *ngFor=\"let choice of form.choiceItems[fieldName]\">{{\u00A0choice }}</option>\n              </select>",
         date: '<input [required]="required" type="date" [(ngModel)]="form.obj[fieldName]">',
         error: '<div class="rwt-error" *ngIf="form.edit && form.errors[fieldName]">{{ form.errors[fieldName] }}</div>',
         // tslint:disable-next-line:max-line-length

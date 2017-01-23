@@ -8,13 +8,36 @@ export function createComponentFactory(resolver: ComponentFactoryResolver, metad
 
 export interface IRwtModuleConfig {
   endPoint: string;
-  loginFunction?: Function;  
+  loginFunction?: Function;
 }
 
 
 export class RwtModuleConfig implements IRwtModuleConfig {
+  /**
+   * type dicts
+   */
   public types: any;
+  /**
+   * Primary rwt endPoint
+   */
   public endPoint: string;
+  /**
+   * A login function
+   */
   public loginFunction: Function;
 }
 
+export interface IError {
+  /**
+   * Exception caught by server
+   */
+  exception: string;
+  /**
+   * All traceback from server
+   */
+  traceBack: string[];
+  /**
+   * when error occurred
+   */
+  time: Date;
+}

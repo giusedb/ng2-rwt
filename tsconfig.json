@@ -19,7 +19,7 @@
         ]
     },
     "files": [
-        "ng2-rwt.ts"
+        "index.ts"
     ],
     "exclude": [
         "node_modules",

@@ -20,26 +20,44 @@ var RwtDataComponent = (function () {
             cd.detectChanges();
         });
     }
+    /**
+     * Fetches needed dat from server
+     */
     RwtDataComponent.prototype.fetch = function () {
         var ths = this;
         this.orm.query(this.resource, this.filter).then(function (items) {
             ths.items = items;
         });
     };
+    /**
+     * Called when items are updated
+     * It understand if items are showables or not and remove or add items to this view
+     */
     RwtDataComponent.prototype.onUpdateItems = function (items) {
         console.log('update:', items);
     };
+    /**
+     * Called when new items marked as deleted
+     * It delete items
+     */
     RwtDataComponent.prototype.onDeleteItems = function (items) {
         console.log('delete', items);
         var itms = Lazy(items);
         this.items = this.items.filter(function (x) { return !itms.contains(x.id); });
     };
+    /**
+     * Called when new items are fetched from client
+     * It adds items to the view according with filters
+     */
     RwtDataComponent.prototype.onNewItems = function (items) {
         console.log('new', items);
         // adding all items who pass filter selection
         Array.prototype.push.apply(this.items, items.filter(this.filterFunction).toArray());
     };
     Object.defineProperty(RwtDataComponent.prototype, "rwtData", {
+        /**
+         * main initialize funcion
+         */
         set: function (value) {
             console.log(value);
             if ('resource' in value) {
@@ -55,10 +73,11 @@ var RwtDataComponent = (function () {
                 }
                 this.fetch();
             }
-            if (value.filter)
+            if (value.filter) {
                 this.orm.getModel(this.resource).then(function (model) {
                     this.filterFunction = this.orm.utils.makeFilter(model, this.filter);
                 }.bind(this));
+            }
             else {
                 this.filterFunction = Boolean;
             }
@@ -94,6 +113,7 @@ __decorate([
 ], RwtDataComponent.prototype, "rwtData", null);
 RwtDataComponent = __decorate([
     core_1.Component({
+        // tslint:disable-next-line:component-selector
         selector: '[rwtData]',
         template: '<ng-content></ng-content>',
     }),

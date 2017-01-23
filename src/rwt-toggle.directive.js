@@ -22,7 +22,6 @@ var RwtToggleDirective = (function () {
         configurable: true
     });
     RwtToggleDirective.prototype.click = function () {
-        console.log('click');
         this.obj[this.attrName] = !this.obj[this.attrName];
         return false;
     };
@@ -41,9 +40,47 @@ __decorate([
 ], RwtToggleDirective.prototype, "click", null);
 RwtToggleDirective = __decorate([
     core_1.Directive({
+        // tslint:disable-next-line:directive-selector
         selector: '[rwtToggle]',
     }),
     __metadata("design:paramtypes", [core_1.ChangeDetectorRef])
 ], RwtToggleDirective);
 exports.RwtToggleDirective = RwtToggleDirective;
+var RwtSetDirective = (function () {
+    function RwtSetDirective(cd) {
+        this.cd = cd;
+    }
+    Object.defineProperty(RwtSetDirective.prototype, "rwtSet", {
+        set: function (value) {
+            this.attrName = value.attribute;
+            this.obj = value.bindTo;
+            this.value = value.value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    RwtSetDirective.prototype.click = function () {
+        this.obj[this.attrName] = this.value;
+        return false;
+    };
+    return RwtSetDirective;
+}());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object),
+    __metadata("design:paramtypes", [Object])
+], RwtSetDirective.prototype, "rwtSet", null);
+__decorate([
+    core_1.HostListener('click'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], RwtSetDirective.prototype, "click", null);
+RwtSetDirective = __decorate([
+    core_1.Directive({
+        selector: '[rwtSet]'
+    }),
+    __metadata("design:paramtypes", [core_1.ChangeDetectorRef])
+], RwtSetDirective);
+exports.RwtSetDirective = RwtSetDirective;
 //# sourceMappingURL=rwt-toggle.directive.js.map

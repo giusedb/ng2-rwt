@@ -1,36 +1,30 @@
-import { NgModule, ModuleWithProviders, Component, Type } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RwtService } from './src/rwt.service';
-import { RwtModuleConfig, IRwtModuleConfig } from './src/shared';
-import { RwtDataComponent } from './src/rwt-data.component';
-import { RwtToggleDirective } from './src/rwt-toggle.directive';
-import { RwtSelectableDirective } from './src/rwt-selectable.directive';
-import { RwtSelectionOutletComponent } from './src/rwt-selection-outlet.component';
-import { RwtFormInlineComponent, RwtFeModelComponent, createFeModel,
-    RwtTableFormComponent, /*RwtFormTemplateComponent*/ } from './src/rwt-form.component';
-import { RwtMultiselectableDirective } from './src/rwt-multiselectable.directive';
-import { RwtMultiselectionOutletComponent } from './src/rwt-multiselection-outlet.component';
-import { RwtModalFormDirective } from './src/rwt-modal.directive';
-import { ModalModule } from 'angular2-modal';
-import { VexModalModule } from 'angular2-modal/plugins/vex';
+import { NgModule, ModuleWithProviders, Component, Type } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { RwtService } from "./src/rwt.service";
+import { RwtModuleConfig, IRwtModuleConfig } from "./src/shared";
+import { RwtDataComponent } from "./src/rwt-data.component";
+import { RwtToggleDirective, RwtSetDirective } from "./src/rwt-toggle.directive";
+import { RwtSelectableDirective } from "./src/rwt-selectable.directive";
+import { RwtSelectionOutletComponent, RwtSelectionOutletDirective } from "./src/rwt-selection-outlet.component";
+import { RwtFormInlineComponent, RwtFeModelComponent, createFeModel, /*RwtFormTemplateComponent*/ } from "./src/rwt-form.component";
+import { RwtMultiselectableDirective } from "./src/rwt-multiselectable.directive";
+import { RwtMultiselectionOutletComponent } from "./src/rwt-multiselection-outlet.component";
 
-export * from './src/rwt.service';
-export * from './src/shared';
-export * from './src/rwt-data.component';
-export * from './src/rwt-selectable.directive';
-export * from './src/rwt-selection-outlet.component';
-export * from './src/rwt-toggle.directive';
-export * from './src/rwt-multiselection-outlet.component';
-export * from './src/rwt-multiselectable.directive';
-export * from './src/rwt-form.component';
+export * from "./src/rwt.service";
+export * from "./src/shared";
+export * from "./src/rwt-data.component";
+export * from "./src/rwt-selectable.directive";
+export * from "./src/rwt-selection-outlet.component";
+export * from "./src/rwt-toggle.directive";
+export * from "./src/rwt-multiselection-outlet.component";
+export * from "./src/rwt-multiselectable.directive";
+export * from "./src/rwt-form.component";
 
 export function getImports(extraModules: Array<any>): Array<any> {
   let baseImports = [
     CommonModule,
     FormsModule,
-    VexModalModule,
-    ModalModule.forRoot(),
   ];
   if (extraModules) {
     Array.prototype.push.apply(baseImports, extraModules);
@@ -46,24 +40,26 @@ export function createModule(extraModules?: Array<any>): Type<any> | ModuleWithP
       RwtToggleDirective,
       RwtSelectableDirective,
       RwtSelectionOutletComponent,
+      RwtSelectableDirective,
       RwtFormInlineComponent,
       RwtMultiselectableDirective,
       RwtMultiselectionOutletComponent,
       RwtFeModelComponent,
-      RwtTableFormComponent,
-      RwtModalFormDirective,
+      RwtSelectionOutletDirective,
+      RwtSetDirective,
       /*RwtFormTemplateComponent*/
     ],
     exports: [RwtDataComponent,
       RwtToggleDirective,
       RwtSelectableDirective,
       RwtSelectionOutletComponent,
+      RwtSelectableDirective,
       RwtFormInlineComponent,
       RwtMultiselectableDirective,
       RwtMultiselectionOutletComponent,
       RwtFeModelComponent,
-      RwtTableFormComponent,
-      RwtModalFormDirective,
+      RwtSelectionOutletDirective,
+      RwtSetDirective,
       /*RwtFormTemplateComponent*/
     ],
   })
@@ -85,4 +81,4 @@ export function createModule(extraModules?: Array<any>): Type<any> | ModuleWithP
   return RwtModule;
 }
 export let RwtModule = createModule();
-console.log('RwtModule created');
+console.log("RwtModule created");
