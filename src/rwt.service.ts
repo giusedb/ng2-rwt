@@ -73,12 +73,22 @@ export interface ORM {
   // tslint:disable-next-line:member-ordering
   utils: {
     bool(x): boolean;
+    /**
+     * Capitalize string
+     */
     capitalize(name: string): string;
-    cleanStorage();
+    /**
+     * Clean all localStorage data
+     */
+    cleanStorage(): void;
+    /**
+     * Clean all model description from localStorage
+     */
+    cleanDescription(): void;
     hash(x: string): string;
     makeFilter(model: any, filter: any, unifier?: string): Function;
     mock(): any;
-    noop();
+    noop(): void;
     permutations(x: any[]): any[];
     pluralize(s: string): string;
     reWheelConnection: any;
@@ -104,7 +114,7 @@ export class RwtService {
   public persistentSelections: any= {};
 
   constructor(config: RwtModuleConfig , private app: ApplicationRef) {
-    let orm = this.orm = new rwt(config.endPoint, config.loginFunction);
+    let orm: ORM = this.orm = new rwt(config.endPoint, config.loginFunction);
     window.orm = orm;
     orm.on('got-data', function(){
       app.tick();
@@ -113,7 +123,7 @@ export class RwtService {
     this.get = orm.get.bind(orm);
     this.emit = orm.emit.bind(orm);
     this.unbind = orm.unbind.bind(orm);
-    orm.unbind(orm.$orm.validationEvent);
+    orm.unbind((<any>orm).$orm.validationEvent);
   }
 
   public select(obj: any) {

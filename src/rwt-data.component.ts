@@ -14,6 +14,7 @@ export interface IRwtAttributes {
   // tslint:disable-next-line:component-selector
   selector: '[rwtData]',
   template: '<ng-content></ng-content>',
+  exportAs: 'rwt-data',
 })
 
 export class RwtDataComponent implements OnInit, OnDestroy {
