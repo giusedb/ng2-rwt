@@ -133,7 +133,7 @@ export class RwtErrorHandlerComponent extends RwtServed implements OnInit, OnDes
 
 @Component({
     selector: '[rwtModalForm]',
-    exportAs: 'rwt-modal'
+    exportAs: 'rwt-modal',
     template: `
     <template #modalContent let-dialog="dialogRef" let-ctx="dialogRef.context">
         <div class="modal-content">
@@ -170,7 +170,6 @@ export class RwtErrorHandlerComponent extends RwtServed implements OnInit, OnDes
 })
 export class RwtModalForm extends RwtForm {
     protected formConfig: IRwtFormOptions;
-    protected title: string;
 
     @ViewChild('modalContent') protected modalContent: TemplateRef<any>;
 
@@ -236,7 +235,6 @@ export class RwtModalForm extends RwtForm {
 })
 export class ModalFormContentComponent implements ModalComponent<BSModalContext> {
   ctx: BSModalContext;
-  dialog: DialogRef<BSModalContext>;
   constructor(public dialog: DialogRef<BSModalContext>) {
     this.ctx = dialog.context;
     this.dialog = dialog;
