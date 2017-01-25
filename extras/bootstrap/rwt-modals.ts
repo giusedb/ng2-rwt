@@ -71,7 +71,7 @@ export class RwtAskDirective {
         <div class="card" *ngIf="showingErrors">
             <ul class="list-group">
                 <li class="list-group-item" (click)="showError(error)" *ngFor="let error of errors">
-                    {{ error.time }}
+                    {{ error.time | date : 'dd/MM/yy hh:mm:ss'}}
                 </li>
             </ul>
         </div>
