@@ -249,8 +249,7 @@ export class RwtForm extends RwtServed {
     if (value !== this.edit) {
       let numChoiches = Lazy(this.fields)
         .filter((field) => (
-          ((field.type === 'reference')
-          || field.validators.valid)
+          (field.type === 'reference')
           && (field.writable)))
         .size();
       // fetching choiches for references

@@ -116,6 +116,7 @@ RwtDataComponent = __decorate([
         // tslint:disable-next-line:component-selector
         selector: '[rwtData]',
         template: '<ng-content></ng-content>',
+        exportAs: 'rwt-data',
     }),
     __metadata("design:paramtypes", [rwt_service_1.RwtService, core_1.ChangeDetectorRef])
 ], RwtDataComponent);

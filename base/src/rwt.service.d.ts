@@ -58,12 +58,22 @@ export interface ORM {
     connect(): Promise<number>;
     utils: {
         bool(x): boolean;
+        /**
+         * Capitalize string
+         */
         capitalize(name: string): string;
-        cleanStorage();
+        /**
+         * Clean all localStorage data
+         */
+        cleanStorage(): void;
+        /**
+         * Clean all model description from localStorage
+         */
+        cleanDescription(): void;
         hash(x: string): string;
         makeFilter(model: any, filter: any, unifier?: string): Function;
         mock(): any;
-        noop();
+        noop(): void;
         permutations(x: any[]): any[];
         pluralize(s: string): string;
         reWheelConnection: any;

@@ -232,8 +232,7 @@ var RwtForm = (function (_super) {
             var _this = this;
             if (value !== this.edit) {
                 var numChoiches_1 = Lazy(this.fields)
-                    .filter(function (field) { return (((field.type === 'reference')
-                    || field.validators.valid)
+                    .filter(function (field) { return ((field.type === 'reference')
                     && (field.writable)); })
                     .size();
                 var _loop_1 = function (field) {
