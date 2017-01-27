@@ -62,7 +62,7 @@ export interface ORM {
   query (modelName: string, filter: Object);
   addModelHandler(modelName: string, decorator: IDecoratorFunction): void;
   addPersistentAttributes(modelName: string, attributes: Array<string>): void;
-  on(eventName: string, eventHandler: Function);
+  on(eventName: string, eventHandler: Function): number;
   emit(eventName: string, [args]): number;
   unbind(handlerId: number): number;
   getModel(modelName: string): any;
@@ -105,25 +105,40 @@ export class RwtService {
   private initialized: boolean;
   private singleSelections: Object = {};
   private multiSelections: Object = {};
-  public on: Function;
+//  public on: Function;
   public get: Function;
   public emit: Function;
   public query: Function;
   public addModelHandler: Function;
   public unbind: Function;
   public persistentSelections: any= {};
+  public ready = false;
+  private waitingEvents: any[] = [];
 
-  constructor(config: RwtModuleConfig , private app: ApplicationRef) {
-    let orm: ORM = this.orm = new rwt(config.endPoint, config.loginFunction);
+  constructor(private app: ApplicationRef) { }
+
+  /**
+   * Connect Rwt with its base end point
+   */
+  public connect(endPoint: string) {
+    let orm: ORM = this.orm = new rwt(endPoint);
     window.orm = orm;
-    orm.on('got-data', function(){
-      app.tick();
+    orm.on('got-data', () => {
+      this.app.tick();
     });
     this.on = orm.on.bind(orm);
     this.get = orm.get.bind(orm);
     this.emit = orm.emit.bind(orm);
     this.unbind = orm.unbind.bind(orm);
     orm.unbind((<any>orm).$orm.validationEvent);
+    this.waitingEvents.forEach(event => {
+      this.on.apply(undefined, event);
+    });
+  }
+
+  on(eventName: string, handler: Function):number  {
+    this.waitingEvents.push([eventName, handler]);
+    return 0;
   }
 
   public select(obj: any) {

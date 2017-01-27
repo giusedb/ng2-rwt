@@ -9,28 +9,42 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var shared_1 = require("./shared");
 if (!window) {
     // tslint:disable-next-line:no-shadowed-variable
     var window_1 = this;
 }
 var RwtService = (function () {
-    function RwtService(config, app) {
+    function RwtService(app) {
         this.app = app;
         this.singleSelections = {};
         this.multiSelections = {};
         this.persistentSelections = {};
-        var orm = this.orm = new rwt(config.endPoint, config.loginFunction);
+        this.ready = false;
+        this.waitingEvents = [];
+    }
+    /**
+     * Connect Rwt with its base end point
+     */
+    RwtService.prototype.connect = function (endPoint) {
+        var _this = this;
+        var orm = this.orm = new rwt(endPoint);
         window.orm = orm;
         orm.on('got-data', function () {
-            app.tick();
+            _this.app.tick();
         });
         this.on = orm.on.bind(orm);
         this.get = orm.get.bind(orm);
         this.emit = orm.emit.bind(orm);
         this.unbind = orm.unbind.bind(orm);
         orm.unbind(orm.$orm.validationEvent);
-    }
+        this.waitingEvents.forEach(function (event) {
+            _this.on.apply(undefined, event);
+        });
+    };
+    RwtService.prototype.on = function (eventName, handler) {
+        this.waitingEvents.push([eventName, handler]);
+        return 0;
+    };
     RwtService.prototype.select = function (obj) {
         var resource = obj.constructor.modelName;
         if (this.singleSelections[resource]) {
@@ -105,7 +119,7 @@ var RwtService = (function () {
 }());
 RwtService = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [shared_1.RwtModuleConfig, core_1.ApplicationRef])
+    __metadata("design:paramtypes", [core_1.ApplicationRef])
 ], RwtService);
 exports.RwtService = RwtService;
 var RwtServed = (function () {

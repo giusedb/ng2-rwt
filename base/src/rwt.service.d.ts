@@ -1,5 +1,4 @@
 import { ApplicationRef, OnDestroy } from '@angular/core';
-import { RwtModuleConfig } from './shared';
 export interface IModel extends Object {
     modelName: string;
     fields: Object;
@@ -48,7 +47,7 @@ export interface ORM {
     query(modelName: string, filter: Object): any;
     addModelHandler(modelName: string, decorator: IDecoratorFunction): void;
     addPersistentAttributes(modelName: string, attributes: Array<string>): void;
-    on(eventName: string, eventHandler: Function): any;
+    on(eventName: string, eventHandler: Function): number;
     emit(eventName: string, [args]: [any]): number;
     unbind(handlerId: number): number;
     getModel(modelName: string): any;
@@ -89,14 +88,20 @@ export declare class RwtService {
     private initialized;
     private singleSelections;
     private multiSelections;
-    on: Function;
     get: Function;
     emit: Function;
     query: Function;
     addModelHandler: Function;
     unbind: Function;
     persistentSelections: any;
-    constructor(config: RwtModuleConfig, app: ApplicationRef);
+    ready: boolean;
+    private waitingEvents;
+    constructor(app: ApplicationRef);
+    /**
+     * Connect Rwt with its base end point
+     */
+    connect(endPoint: string): void;
+    on(eventName: string, handler: Function): number;
     select(obj: any): void;
     private savePersistent(resource, value);
     makePersistentSelection(resource: string): void;
