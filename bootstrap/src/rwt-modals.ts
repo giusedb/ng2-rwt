@@ -126,7 +126,7 @@ export class RwtErrorHandlerComponent extends RwtServed implements OnInit, OnDes
         .dialogClass('danger')
         .showClose(true)
         .title('Exception ' + error.exception)
-        .message('<pre>' + error.traceBack.join('\n') + '</pre>')
+        .message('<pre>' + error.traceback.join('\n') + '</pre>')
         .open();
   }
 }

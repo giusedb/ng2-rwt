@@ -28,12 +28,14 @@ __export(require("./src/rwt-toggle.directive"));
 __export(require("./src/rwt-multiselection-outlet.component"));
 __export(require("./src/rwt-multiselectable.directive"));
 __export(require("./src/rwt-form.component"));
+// demo only
+var ng2_datetime_1 = require("ng2-datetime/ng2-datetime");
 var baseImports = [
     common_1.CommonModule,
     forms_1.FormsModule,
 ];
 var moduleDef = {
-    imports: baseImports,
+    imports: baseImports.concat([ng2_datetime_1.NKDatetimeModule]),
     declarations: [
         rwt_data_component_1.RwtDataComponent,
         rwt_toggle_directive_1.RwtToggleDirective,
