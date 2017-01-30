@@ -26,7 +26,7 @@ export interface IError {
     /**
      * All traceback from server
      */
-    traceBack: string[];
+    traceback: string[];
     /**
      * when error occurred
      */

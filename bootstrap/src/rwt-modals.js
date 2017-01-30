@@ -113,7 +113,7 @@ var RwtErrorHandlerComponent = (function (_super) {
             .dialogClass('danger')
             .showClose(true)
             .title('Exception ' + error.exception)
-            .message('<pre>' + error.traceBack.join('\n') + '</pre>')
+            .message('<pre>' + error.traceback.join('\n') + '</pre>')
             .open();
     };
     return RwtErrorHandlerComponent;
