@@ -10,6 +10,7 @@ import { RwtSelectionOutletComponent, RwtSelectionOutletDirective } from "./src/
 import { RwtFormInlineComponent, RwtFeModelComponent, createFeModel, /*RwtFormTemplateComponent*/ } from "./src/rwt-form.component";
 import { RwtMultiselectableDirective } from "./src/rwt-multiselectable.directive";
 import { RwtMultiselectionOutletComponent } from "./src/rwt-multiselection-outlet.component";
+import { RwtFormDirective } from './src/rwt-form.directive';
 
 export * from "./src/rwt.service";
 export * from "./src/shared";
@@ -20,8 +21,10 @@ export * from "./src/rwt-toggle.directive";
 export * from "./src/rwt-multiselection-outlet.component";
 export * from "./src/rwt-multiselectable.directive";
 export * from "./src/rwt-form.component";
+export * from "./src/rwt-form";
 
-let extraModules = [];
+let extraModules: any[] = [];
+
 // demo only
 
 import { NKDatetimeModule } from 'ng2-datetime/ng2-datetime';

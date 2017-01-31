@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;;AAAA,kCAA6B;AAC7B,yDAAyD"}
+=======
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;;AAAA,kCAA6B"}
+>>>>>>> 9b0d30539df4ed11108a5eb0477a508e4d958d74

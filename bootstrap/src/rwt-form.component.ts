@@ -23,6 +23,7 @@ import { RwtService, RwtForm, IRwtFormOptions } from '../..';
           </tr>
           <input type="submit" [hidden]="true">
       </table>
+      {{ obj | json }}
     </form>
   `,
 })

@@ -1,23 +1,7 @@
 import { ChangeDetectorRef, Type, EventEmitter, ElementRef } from '@angular/core';
 import { ORM, RwtService, RwtServed, IRwtField, Fields } from './rwt.service';
-export declare class Choice {
-    id: any;
-    private text;
-    constructor(element: any);
-    toString(): string;
-}
-export interface IRwtFormOptions {
-    resource?: string;
-    record?: number;
-    object?: any;
-    editable?: boolean;
-    title?: string;
-    showFields?: Array<string>;
-    fieldDefs?: Fields;
-    values?: any;
-    verb?: string;
-}
-export declare class RwtForm extends RwtServed {
+import { RwtForm, IRwtFormOptions } from './rwt-form';
+export declare class RwtForm2 extends RwtServed {
     protected cd: ChangeDetectorRef;
     static idx: number;
     formIdx: number;
@@ -46,12 +30,21 @@ export declare class RwtForm extends RwtServed {
     waiting: boolean;
     sent: EventEmitter<{}>;
     private updateObject();
+    private resolveReferences();
+    /**
+     * create an editable copy of real object
+     * backup an original copy and acquire remoe references if any
+     */
     private acquireObject(obj);
+    /**
+     * Update field definition deeply
+     */
     private updateFields();
+    private fetchAlternatives();
     private finalize(editable);
     setAttributes(attributes: IRwtFormOptions): void;
     editable: boolean;
-    gotModel(model: any, callBack?: Function): void;
+    gotModel(model: any): void;
     toggleEdit(): void;
     submit(): void;
 }

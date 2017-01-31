@@ -2,40 +2,11 @@
 // tslint:disable-next-line:max-line-length
 import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter, ViewChild, ViewChildDecorator, ElementRef } from '@angular/core';
 import { ORM, RwtService, RwtServed, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
+import { Choice, RwtForm, IRwtFormOptions } from './rwt-form';
 
 declare var Lazy;
 
-export class Choice {
-  public id: any;
-  private text: string;
-  constructor(element: any) {
-    if (element && (element.constructor === Array)) {
-      this.id = element[0];
-      this.text = (element.length === 0) ? this.id : element[1];
-    } else {
-      this.id = element;
-      this.text = element.toString();
-    }
-  }
-
-  toString() {
-    return this.text;
-  }
-}
-
-export interface IRwtFormOptions {
-  resource?: string;
-  record?: number;
-  object?: any;
-  editable?: boolean;
-  title?: string;
-  showFields?: Array<string>;
-  fieldDefs?: Fields;
-  values?: any;
-  verb?: string;
-}
-
-export class RwtForm extends RwtServed {
+export class RwtForm2 extends RwtServed {
   public static idx: number = 0;
   public formIdx: number;
   public obj: any;
@@ -64,9 +35,8 @@ export class RwtForm extends RwtServed {
   constructor(rwt: RwtService, protected cd: ChangeDetectorRef) {
     super(rwt);
     this.orm = rwt.orm;
-    this.formIdx = RwtForm.idx ++;
+//    this.formIdx = RwtForm.idx ++;
   }
-
 
   public get waiting () {
     return !this.ready;
@@ -79,7 +49,7 @@ export class RwtForm extends RwtServed {
   @Output() sent = new EventEmitter();
 
   private updateObject() {
-    if (this.values) {
+    if (this.values && this.values.length) {
       // update each object key
       Lazy(this.values).each((v, k) => {
         this.obj[k] = v;
@@ -87,12 +57,22 @@ export class RwtForm extends RwtServed {
     }
   }
 
+  private resolveReferences() {
+    this.fields.filter(field => field.type === 'reference').forEach(field => {
+      if (typeof this.obj[field.id] === 'number') {
+        this.rwt.get(field.to, this.obj[field.id])
+          .then(val => {
+            this.obj[field.id] = val;
+          });
+      }
+    });
+  }
+
+  /**
+   * create an editable copy of real object
+   * backup an original copy and acquire remoe references if any
+   */
   private acquireObject(obj) {
-    /**
-     * create an editable copy of real object
-     * backup an original copy and acquire remoe references if any
-     */
-    let remoteReferences = [];
     if (obj) {
       this.originalObject = obj;
       this.oldObj = obj.asRaw();
@@ -101,10 +81,10 @@ export class RwtForm extends RwtServed {
     return Lazy(this.oldObj).toObject();
   }
 
+  /**
+   * Update field definition deeply
+   */
   private updateFields() {
-    /**
-     * Update field definition deeply
-     */
     let extras = [];
     if (this.extraFields) {
       // integrate field default
@@ -164,6 +144,10 @@ export class RwtForm extends RwtServed {
           .map((x) => new Choice(x)).toArray();
       }
     });
+    this.obj = this.acquireObject(null)
+  }
+
+  private fetchAlternatives() {
     // waiting for references resolution
     let missingReferences = this.fields.filter(
       (field) => field.type === 'reference'
@@ -178,8 +162,6 @@ export class RwtForm extends RwtServed {
               referenceLen --;
               if (!referenceLen) {
                 this.obj = this.acquireObject(this.originalObject);
-                this.ready = true;
-                this.cd.detectChanges();
               }
             });
         } else {
@@ -187,17 +169,17 @@ export class RwtForm extends RwtServed {
         }
       }
     }
-    return !(referenceLen && this.originalObject);
   }
 
   private finalize(editable: boolean) {
     /**
      * Finalizes object and field creation
      */
-    this.ready = this.updateFields();
+    this.ready = false // this.updateFields();
     this.updateObject();
     this.editable = editable || false;
     this.cd.detectChanges();
+    this.resolveReferences();
   }
 
   public setAttributes(attributes: IRwtFormOptions) { 
@@ -215,8 +197,10 @@ export class RwtForm extends RwtServed {
     if (attributes.object) {
       this.isNew = false;
       this.gotModel(attributes.object.constructor);
+/*
       this.obj = this.acquireObject(attributes.object);
       this.finalize(attributes.editable);
+*/
     } else if (attributes.record) {
       let x: any = attributes.record;
       this.isNew = false;
@@ -233,11 +217,7 @@ export class RwtForm extends RwtServed {
     } else if (attributes.resource) {
       this.isNew = true;
       this.orm.getModel(attributes.resource)
-        .then(this.gotModel.bind(this))
-        .then(function(){
-          self.obj = {};
-          self.finalize(attributes.editable);
-        });
+        .then(this.gotModel.bind(this));
     } else {
       // form is incomplete
       // this.finalize();
@@ -276,7 +256,7 @@ export class RwtForm extends RwtServed {
     }
   }
 
-  gotModel(model: any, callBack?: Function) {
+  gotModel(model: any) {
     this.model = model;
     // copy original model fields
     this.allFields = Lazy(model.fields).toObject();
@@ -285,7 +265,8 @@ export class RwtForm extends RwtServed {
     } // else fields remain user defined
 
     // tslint:disable-next-line:no-unused-expression
-    callBack && callBack();
+    // callBack && callBack();
+    this.updateFields();
   }
 
   toggleEdit() {
@@ -433,7 +414,7 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
     // tslint:disable-next-line:max-line-length
     default: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="text">',
     id: '{{ form.obj[fieldName] }}',
-    choices: `<select [required]="required" [(ngModel)]="form.obj[fieldName]">
+    choices: `{{ value }}<select [required]="required" [(ngModel)]="form.obj[fieldName]">
                   <option [ngValue]="choice" *ngFor="let choice of form.choiceItems[fieldName]">{{ choice }}</option>
               </select>`,
     date: '<input [required]="required" type="date" [(ngModel)]="form.obj[fieldName]">',
