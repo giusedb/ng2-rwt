@@ -10,7 +10,6 @@ import { RwtSelectionOutletComponent, RwtSelectionOutletDirective } from "./src/
 import { RwtFormInlineComponent, RwtFeModelComponent, createFeModel, /*RwtFormTemplateComponent*/ } from "./src/rwt-form.component";
 import { RwtMultiselectableDirective } from "./src/rwt-multiselectable.directive";
 import { RwtMultiselectionOutletComponent } from "./src/rwt-multiselection-outlet.component";
-import { RwtFormDirective } from './src/rwt-form.directive';
 
 export * from "./src/rwt.service";
 export * from "./src/shared";
