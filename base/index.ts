@@ -21,8 +21,11 @@ export * from "./src/rwt-multiselection-outlet.component";
 export * from "./src/rwt-multiselectable.directive";
 export * from "./src/rwt-form.component";
 
+
+let extraModules: any[] = [];
 // demo only
 import { NKDatetimeModule } from 'ng2-datetime/ng2-datetime';
+extraModules.push(NKDatetimeModule);
 
 let baseImports = [
   CommonModule,
@@ -30,7 +33,7 @@ let baseImports = [
 ];
 
 let moduleDef: NgModule = {
-  imports: baseImports.concat([ NKDatetimeModule ]),
+  imports: baseImports.concat(extraModules),
   declarations: [
     RwtDataComponent,
     RwtToggleDirective,

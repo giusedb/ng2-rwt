@@ -87,12 +87,22 @@ export class RwtForm extends RwtServed {
     }
   }
 
+  private resolveReferences() {
+    this.fields.filter(field => field.type === 'reference').forEach(field => {
+      if (typeof this.obj[field.id] === 'number') {
+        this.rwt.get(field.to, this.obj[field.id])
+          .then(val => {
+            this.obj[field.id] = val;
+          });
+      }
+    });
+  }
+
   private acquireObject(obj) {
     /**
      * create an editable copy of real object
      * backup an original copy and acquire remoe references if any
      */
-    let remoteReferences = [];
     if (obj) {
       this.originalObject = obj;
       this.oldObj = obj.asRaw();
@@ -198,6 +208,7 @@ export class RwtForm extends RwtServed {
     this.updateObject();
     this.editable = editable || false;
     this.cd.detectChanges();
+    this.resolveReferences();
   }
 
   public setAttributes(attributes: IRwtFormOptions) { 
@@ -433,7 +444,7 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
     // tslint:disable-next-line:max-line-length
     default: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="text">',
     id: '{{ form.obj[fieldName] }}',
-    choices: `<select [required]="required" [(ngModel)]="form.obj[fieldName]">
+    choices: `{{ value }}<select [required]="required" [(ngModel)]="form.obj[fieldName]">
                   <option [ngValue]="choice" *ngFor="let choice of form.choiceItems[fieldName]">{{ choice }}</option>
               </select>`,
     date: '<input [required]="required" type="date" [(ngModel)]="form.obj[fieldName]">',
