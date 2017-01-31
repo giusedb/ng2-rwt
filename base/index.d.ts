@@ -8,6 +8,7 @@ export * from "./src/rwt-toggle.directive";
 export * from "./src/rwt-multiselection-outlet.component";
 export * from "./src/rwt-multiselectable.directive";
 export * from "./src/rwt-form.component";
+export * from "./src/rwt-form";
 export declare class RwtModule {
 }
 export declare function createModule(extraModules?: NgModule[]): Type<NgModule>;

@@ -16,26 +16,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 // tslint:disable-next-line:max-line-length
 var core_1 = require("@angular/core");
 var rwt_service_1 = require("./rwt.service");
-var Choice = (function () {
-    function Choice(element) {
-        if (element && (element.constructor === Array)) {
-            this.id = element[0];
-            this.text = (element.length === 0) ? this.id : element[1];
-        }
-        else {
-            this.id = element;
-            this.text = element.toString();
-        }
-    }
-    Choice.prototype.toString = function () {
-        return this.text;
-    };
-    return Choice;
-}());
-exports.Choice = Choice;
-var RwtForm = (function (_super) {
-    __extends(RwtForm, _super);
-    function RwtForm(rwt, cd) {
+var rwt_form_1 = require("./rwt-form");
+var RwtForm2 = (function (_super) {
+    __extends(RwtForm2, _super);
+    function RwtForm2(rwt, cd) {
         var _this = _super.call(this, rwt) || this;
         _this.cd = cd;
         _this.choiceItems = {}; // { field name : }
@@ -49,10 +33,10 @@ var RwtForm = (function (_super) {
         // tslint:disable-next-line:member-ordering
         _this.sent = new core_1.EventEmitter();
         _this.orm = rwt.orm;
-        _this.formIdx = RwtForm.idx++;
         return _this;
+        //    this.formIdx = RwtForm.idx ++;
     }
-    Object.defineProperty(RwtForm.prototype, "waiting", {
+    Object.defineProperty(RwtForm2.prototype, "waiting", {
         get: function () {
             return !this.ready;
         },
@@ -62,21 +46,31 @@ var RwtForm = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    RwtForm.prototype.updateObject = function () {
+    RwtForm2.prototype.updateObject = function () {
         var _this = this;
-        if (this.values) {
+        if (this.values && this.values.length) {
             // update each object key
             Lazy(this.values).each(function (v, k) {
                 _this.obj[k] = v;
             });
         }
     };
-    RwtForm.prototype.acquireObject = function (obj) {
-        /**
-         * create an editable copy of real object
-         * backup an original copy and acquire remoe references if any
-         */
-        var remoteReferences = [];
+    RwtForm2.prototype.resolveReferences = function () {
+        var _this = this;
+        this.fields.filter(function (field) { return field.type === 'reference'; }).forEach(function (field) {
+            if (typeof _this.obj[field.id] === 'number') {
+                _this.rwt.get(field.to, _this.obj[field.id])
+                    .then(function (val) {
+                    _this.obj[field.id] = val;
+                });
+            }
+        });
+    };
+    /**
+     * create an editable copy of real object
+     * backup an original copy and acquire remoe references if any
+     */
+    RwtForm2.prototype.acquireObject = function (obj) {
         if (obj) {
             this.originalObject = obj;
             this.oldObj = obj.asRaw();
@@ -84,11 +78,11 @@ var RwtForm = (function (_super) {
         // make a copy
         return Lazy(this.oldObj).toObject();
     };
-    RwtForm.prototype.updateFields = function () {
+    /**
+     * Update field definition deeply
+     */
+    RwtForm2.prototype.updateFields = function () {
         var _this = this;
-        /**
-         * Update field definition deeply
-         */
         var extras = [];
         if (this.extraFields) {
             // integrate field default
@@ -144,9 +138,13 @@ var RwtForm = (function (_super) {
                     field.widget = 'choices';
                 }
                 _this.choiceItems[field.id] = Lazy(field.validators.valid)
-                    .map(function (x) { return new Choice(x); }).toArray();
+                    .map(function (x) { return new rwt_form_1.Choice(x); }).toArray();
             }
         });
+        this.obj = this.acquireObject(null);
+    };
+    RwtForm2.prototype.fetchAlternatives = function () {
+        var _this = this;
         // waiting for references resolution
         var missingReferences = this.fields.filter(function (field) { return field.type === 'reference'; });
         var referenceLen = missingReferences.length;
@@ -160,8 +158,6 @@ var RwtForm = (function (_super) {
                         referenceLen--;
                         if (!referenceLen) {
                             _this.obj = _this.acquireObject(_this.originalObject);
-                            _this.ready = true;
-                            _this.cd.detectChanges();
                         }
                     });
                 }
@@ -170,18 +166,18 @@ var RwtForm = (function (_super) {
                 }
             }
         }
-        return !(referenceLen && this.originalObject);
     };
-    RwtForm.prototype.finalize = function (editable) {
+    RwtForm2.prototype.finalize = function (editable) {
         /**
          * Finalizes object and field creation
          */
-        this.ready = this.updateFields();
+        this.ready = false; // this.updateFields();
         this.updateObject();
         this.editable = editable || false;
         this.cd.detectChanges();
+        this.resolveReferences();
     };
-    RwtForm.prototype.setAttributes = function (attributes) {
+    RwtForm2.prototype.setAttributes = function (attributes) {
         /**
          * Redefine all attributes for form rendering
          */
@@ -196,8 +192,6 @@ var RwtForm = (function (_super) {
         if (attributes.object) {
             this.isNew = false;
             this.gotModel(attributes.object.constructor);
-            this.obj = this.acquireObject(attributes.object);
-            this.finalize(attributes.editable);
         }
         else if (attributes.record) {
             var x_1 = attributes.record;
@@ -217,16 +211,12 @@ var RwtForm = (function (_super) {
         else if (attributes.resource) {
             this.isNew = true;
             this.orm.getModel(attributes.resource)
-                .then(this.gotModel.bind(this))
-                .then(function () {
-                self.obj = {};
-                self.finalize(attributes.editable);
-            });
+                .then(this.gotModel.bind(this));
         }
         else {
         }
     };
-    Object.defineProperty(RwtForm.prototype, "editable", {
+    Object.defineProperty(RwtForm2.prototype, "editable", {
         get: function () { return this.edit; },
         set: function (value) {
             var _this = this;
@@ -267,7 +257,7 @@ var RwtForm = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    RwtForm.prototype.gotModel = function (model, callBack) {
+    RwtForm2.prototype.gotModel = function (model) {
         this.model = model;
         // copy original model fields
         this.allFields = Lazy(model.fields).toObject();
@@ -275,12 +265,13 @@ var RwtForm = (function (_super) {
             this.showFields = model.fieldsOrder;
         } // else fields remain user defined
         // tslint:disable-next-line:no-unused-expression
-        callBack && callBack();
+        // callBack && callBack();
+        this.updateFields();
     };
-    RwtForm.prototype.toggleEdit = function () {
+    RwtForm2.prototype.toggleEdit = function () {
         this.editable = !this.edit;
     };
-    RwtForm.prototype.submit = function () {
+    RwtForm2.prototype.submit = function () {
         var _this = this;
         var orm = this.orm;
         function toDate(x) {
@@ -378,18 +369,18 @@ var RwtForm = (function (_super) {
             _this.ready = true;
         });
     };
-    return RwtForm;
+    return RwtForm2;
 }(rwt_service_1.RwtServed));
-RwtForm.idx = 0;
+RwtForm2.idx = 0;
 __decorate([
     core_1.ViewChild('mainForm'),
     __metadata("design:type", core_1.ElementRef)
-], RwtForm.prototype, "mainForm", void 0);
+], RwtForm2.prototype, "mainForm", void 0);
 __decorate([
     core_1.Output(),
     __metadata("design:type", Object)
-], RwtForm.prototype, "sent", void 0);
-exports.RwtForm = RwtForm;
+], RwtForm2.prototype, "sent", void 0);
+exports.RwtForm2 = RwtForm2;
 ;
 var RwtFormInlineComponent = (function (_super) {
     __extends(RwtFormInlineComponent, _super);
@@ -404,7 +395,7 @@ var RwtFormInlineComponent = (function (_super) {
         configurable: true
     });
     return RwtFormInlineComponent;
-}(RwtForm));
+}(rwt_form_1.RwtForm));
 __decorate([
     core_1.Input(),
     __metadata("design:type", Object),
@@ -432,7 +423,7 @@ var RwtFormTemplateComponent = (function (_super) {
         configurable: true
     });
     return RwtFormTemplateComponent;
-}(RwtForm));
+}(rwt_form_1.RwtForm));
 __decorate([
     core_1.Input(),
     __metadata("design:type", Object),
@@ -461,7 +452,7 @@ function createFeModel(editableTemplates, staticTemplates) {
         // tslint:disable-next-line:max-line-length
         default: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="text">',
         id: '{{ form.obj[fieldName] }}',
-        choices: "<select [required]=\"required\" [(ngModel)]=\"form.obj[fieldName]\">\n                  <option [ngValue]=\"choice\" *ngFor=\"let choice of form.choiceItems[fieldName]\">{{\u00A0choice }}</option>\n              </select>",
+        choices: "{{ value }}<select [required]=\"required\" [(ngModel)]=\"form.obj[fieldName]\">\n                  <option [ngValue]=\"choice\" *ngFor=\"let choice of form.choiceItems[fieldName]\">{{\u00A0choice }}</option>\n              </select>",
         date: '<input [required]="required" type="date" [(ngModel)]="form.obj[fieldName]">',
         error: '<div class="rwt-error" *ngIf="form.edit && form.errors[fieldName]">{{ form.errors[fieldName] }}</div>',
         // tslint:disable-next-line:max-line-length
