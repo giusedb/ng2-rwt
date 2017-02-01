@@ -128,6 +128,7 @@ export class RwtService {
     });
     this.on = orm.on.bind(orm);
     this.get = orm.get.bind(orm);
+    this.query = orm.query.bind(orm);
     this.emit = orm.emit.bind(orm);
     this.unbind = orm.unbind.bind(orm);
     orm.unbind((<any>orm).$orm.validationEvent);
@@ -224,8 +225,10 @@ export class RwtServed  implements OnDestroy {
   // tslint:disable-next-line:no-shadowed-variable
   constructor(protected rwt: RwtService) { }
 
-  protected on (eventName: string, eventHandler: Function) {
-    this.eventHandlers.push(this.rwt.on(eventName, eventHandler));
+  protected on (eventName: string, eventHandler: Function): number {
+    let evt = this.rwt.on(eventName, eventHandler);
+    this.eventHandlers.push(evt);
+    return evt;
   }
 
   ngOnDestroy() {
