@@ -2,7 +2,7 @@
 // tslint:disable-next-line:max-line-length
 import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter, ViewChild, ViewChildDecorator, ElementRef } from '@angular/core';
 import { ORM, RwtService, RwtServed, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
-import { Choice, RwtForm, IRwtFormOptions } from './rwt-form';
+import { Choice, IRwtFormOptions, RwtForm } from "./rwt-form";
 
 declare var Lazy;
 

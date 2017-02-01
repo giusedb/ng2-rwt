@@ -34,6 +34,7 @@ var RwtService = (function () {
         });
         this.on = orm.on.bind(orm);
         this.get = orm.get.bind(orm);
+        //    this.query = orm.query.bind(orm);
         this.emit = orm.emit.bind(orm);
         this.unbind = orm.unbind.bind(orm);
         orm.unbind(orm.$orm.validationEvent);
@@ -130,7 +131,9 @@ var RwtServed = (function () {
         this.waiting = false;
     }
     RwtServed.prototype.on = function (eventName, eventHandler) {
-        this.eventHandlers.push(this.rwt.on(eventName, eventHandler));
+        var evt = this.rwt.on(eventName, eventHandler);
+        this.eventHandlers.push(evt);
+        return evt;
     };
     RwtServed.prototype.ngOnDestroy = function () {
         this.eventHandlers.forEach(this.rwt.unbind);

@@ -44,7 +44,6 @@ export interface ILoginResult {
 export interface ORM {
     new (endPoint: string, loginFunction: Function): any;
     get(modelName: string, ids: Array<number>): Promise<any>;
-    query(modelName: string, filter: Object): any;
     addModelHandler(modelName: string, decorator: IDecoratorFunction): void;
     addPersistentAttributes(modelName: string, attributes: Array<string>): void;
     on(eventName: string, eventHandler: Function): number;
@@ -90,7 +89,6 @@ export declare class RwtService {
     private multiSelections;
     get: Function;
     emit: Function;
-    query: Function;
     addModelHandler: Function;
     unbind: Function;
     persistentSelections: any;
@@ -116,6 +114,6 @@ export declare class RwtServed implements OnDestroy {
     protected eventHandlers: number[];
     protected waiting: boolean;
     constructor(rwt: RwtService);
-    protected on(eventName: string, eventHandler: Function): void;
+    protected on(eventName: string, eventHandler: Function): number;
     ngOnDestroy(): void;
 }

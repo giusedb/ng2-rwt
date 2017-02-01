@@ -25,7 +25,7 @@ var RwtDataComponent = (function () {
      */
     RwtDataComponent.prototype.fetch = function () {
         var ths = this;
-        this.orm.query(this.resource, this.filter).then(function (items) {
+        this.orm.get(this.resource, this.filter).then(function (items) {
             ths.items = items;
         });
     };

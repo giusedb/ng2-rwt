@@ -58,8 +58,8 @@ export interface ILoginResult {
 
 export interface ORM {
   new(endPoint: string, loginFunction: Function);
-  get (modelName: string, ids: Array<number>): Promise<any>;
-  query (modelName: string, filter: Object);
+  get (modelName: string, filter?: number | number[] | Object ): Promise<any>;
+//  query (modelName: string, filter: Object);
   addModelHandler(modelName: string, decorator: IDecoratorFunction): void;
   addPersistentAttributes(modelName: string, attributes: Array<string>): void;
   on(eventName: string, eventHandler: Function): number;
@@ -108,7 +108,7 @@ export class RwtService {
 //  public on: Function;
   public get: Function;
   public emit: Function;
-  public query: Function;
+//  public query: Function;
   public addModelHandler: Function;
   public unbind: Function;
   public persistentSelections: any= {};
@@ -128,7 +128,7 @@ export class RwtService {
     });
     this.on = orm.on.bind(orm);
     this.get = orm.get.bind(orm);
-    this.query = orm.query.bind(orm);
+//    this.query = orm.query.bind(orm);
     this.emit = orm.emit.bind(orm);
     this.unbind = orm.unbind.bind(orm);
     orm.unbind((<any>orm).$orm.validationEvent);

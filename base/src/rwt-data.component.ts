@@ -37,7 +37,7 @@ export class RwtDataComponent implements OnInit, OnDestroy {
    */
   fetch(): void {
     let ths = this;
-    this.orm.query(this.resource, this.filter).then(function(items){
+    this.orm.get(this.resource, this.filter).then(function(items){
       ths.items = items;
     });
   }

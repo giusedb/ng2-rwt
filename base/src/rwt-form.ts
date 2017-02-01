@@ -13,8 +13,7 @@ export interface IRwtFormOptions {
   fieldDefs?: Fields;
   values?: any;
   verb?: string;
-}
-
+};
 
 export class Choice {
   public id: any;
@@ -32,7 +31,7 @@ export class Choice {
   toString() {
     return this.text;
   }
-}
+};
 
 export class RwtForm extends RwtServed {
   public obj: any;
@@ -195,7 +194,7 @@ export class RwtForm extends RwtServed {
     let refLen = references.length;
     references.forEach(field => {
       // fetch choosable alternatives for reference choice
-      this.rwt.query(field.to, {})
+      this.rwt.get(field.to)
         .then(objects => {
           this.choiceItems[field.id] = objects;
           refLen --;
@@ -294,7 +293,7 @@ export class RwtForm extends RwtServed {
       for (let field of this.fields){
         if ((field.type === 'reference') && (field.writable)) {
           this.ready = false;
-          this.rwt.orm.query(<any>field.to, this.fieldFilters[field.id] || {})
+          this.rwt.orm.get(<any>field.to, this.fieldFilters[field.id] || {})
             .then((references) => {
               this.choiceItems[field.id] = references;
               numChoiches --;
@@ -435,5 +434,3 @@ export class RwtForm extends RwtServed {
   }
 };
 
-
-}
