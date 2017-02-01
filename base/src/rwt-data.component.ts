@@ -30,6 +30,7 @@ export class RwtDataComponent implements OnInit, OnDestroy {
   protected updateFilterHandler: number;
   protected newFilterHandler: number;
   protected deleteFilterHandler: number;
+  protected ready: boolean;
   public select: Function;
 
   /**
@@ -47,6 +48,18 @@ export class RwtDataComponent implements OnInit, OnDestroy {
    */
   protected onUpdateItems(items: Array<any>) {
     console.log('update:', items);
+    let ids = [];
+    for (let item of items) {
+      let xor = item.map(this.filterFunction);
+      if (xor[0] && !xor[1]) {
+        this.items.push(item[0]);
+      } else if (xor[1] && !xor[0]) {
+        ids.push(item[0].id);
+      }
+    }
+    for (let delIdx of ids.reverse()) {
+      this.items.splice(delIdx,1);
+    }
   }
 
   /**
