@@ -43,7 +43,7 @@ export interface ILoginResult {
 }
 export interface ORM {
     new (endPoint: string, loginFunction: Function): any;
-    get(modelName: string, ids: Array<number>): Promise<any>;
+    get(modelName: string, filter?: number | number[] | Object): Promise<any>;
     addModelHandler(modelName: string, decorator: IDecoratorFunction): void;
     addPersistentAttributes(modelName: string, attributes: Array<string>): void;
     on(eventName: string, eventHandler: Function): number;

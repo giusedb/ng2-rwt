@@ -35,6 +35,21 @@ var RwtDataComponent = (function () {
      */
     RwtDataComponent.prototype.onUpdateItems = function (items) {
         console.log('update:', items);
+        var ids = [];
+        for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+            var item = items_1[_i];
+            var xor = item.map(this.filterFunction);
+            if (xor[0] && !xor[1]) {
+                this.items.push(item[0]);
+            }
+            else if (xor[1] && !xor[0]) {
+                ids.push(item[0].id);
+            }
+        }
+        for (var _a = 0, _b = ids.reverse(); _a < _b.length; _a++) {
+            var delIdx = _b[_a];
+            this.items.splice(delIdx, 1);
+        }
     };
     /**
      * Called when new items marked as deleted

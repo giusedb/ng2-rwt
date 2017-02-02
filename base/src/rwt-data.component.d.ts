@@ -18,6 +18,7 @@ export declare class RwtDataComponent implements OnInit, OnDestroy {
     protected updateFilterHandler: number;
     protected newFilterHandler: number;
     protected deleteFilterHandler: number;
+    protected ready: boolean;
     select: Function;
     /**
      * Fetches needed dat from server
