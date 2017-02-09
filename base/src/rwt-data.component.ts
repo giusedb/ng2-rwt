@@ -47,7 +47,7 @@ export class RwtDataComponent implements OnInit, OnDestroy {
    * It understand if items are showables or not and remove or add items to this view
    */
   protected onUpdateItems(items: Array<any>) {
-    console.log('update:', items);
+    // console.log('update:', items);
     let ids = [];
     for (let item of items) {
       let xor = item.map(this.filterFunction);
