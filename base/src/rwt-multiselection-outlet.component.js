@@ -50,6 +50,7 @@ RwtMultiselectionOutletComponent = __decorate([
         selector: '[rwtMultiselectionOutlet]',
         template: '<ng-content></ng-content>',
         outputs: ['selected'],
+        exportAs: 'rwt-selection',
     }),
     __metadata("design:paramtypes", [rwt_service_1.RwtService])
 ], RwtMultiselectionOutletComponent);
