@@ -13,6 +13,7 @@ export interface IRwtMultiSelectable {
   selector: '[rwtMultiselectionOutlet]',
   template: '<ng-content></ng-content>',
   outputs: ['selected'],
+  exportAs: 'rwt-selection',
 })
 export class RwtMultiselectionOutletComponent implements OnInit {
   public selected: Array<any>;

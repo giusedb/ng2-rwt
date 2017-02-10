@@ -34,7 +34,7 @@ var RwtDataComponent = (function () {
      * It understand if items are showables or not and remove or add items to this view
      */
     RwtDataComponent.prototype.onUpdateItems = function (items) {
-        console.log('update:', items);
+        // console.log('update:', items);
         var ids = [];
         for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
             var item = items_1[_i];
