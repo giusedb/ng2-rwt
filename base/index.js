@@ -30,9 +30,12 @@ __export(require("./src/rwt-multiselectable.directive"));
 __export(require("./src/rwt-form.component"));
 __export(require("./src/rwt-form"));
 var extraModules = [];
+/*
 // demo only
-var ng2_datetime_1 = require("ng2-datetime/ng2-datetime");
-extraModules.push(ng2_datetime_1.NKDatetimeModule);
+
+import { NKDatetimeModule } from 'ng2-datetime/ng2-datetime';
+extraModules.push(NKDatetimeModule);
+*/
 // demo
 var baseImports = [
     common_1.CommonModule,

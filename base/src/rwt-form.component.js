@@ -93,7 +93,6 @@ function createFeModel(editableTemplates, staticTemplates) {
         // tslint:disable-next-line:max-line-length
         password: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="password">',
     };
-    console.log('ciao');
     var typeTemplates = Lazy(defaultTemplates)
         .keys()
         .concat(Lazy(editableTemplates).keys())

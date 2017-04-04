@@ -1,4 +1,4 @@
-import { NgModule, ModuleWithProviders, Component, Type, NgModuleFactory, Injector,  } from "@angular/core";
+import { NgModule, ModuleWithProviders, Component, Type, NgModuleFactory, Injector } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { RwtService } from "./src/rwt.service";
@@ -24,11 +24,12 @@ export * from "./src/rwt-form";
 
 let extraModules: any[] = [];
 
+/*
 // demo only
 
 import { NKDatetimeModule } from 'ng2-datetime/ng2-datetime';
 extraModules.push(NKDatetimeModule);
-
+*/
 // demo
 
 let baseImports = [

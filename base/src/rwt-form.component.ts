@@ -1,8 +1,10 @@
 
 // tslint:disable-next-line:max-line-length
 import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter, ViewChild, ViewChildDecorator, ElementRef } from '@angular/core';
-import { ORM, RwtService, RwtServed, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
-import { Choice, IRwtFormOptions, RwtForm } from "./rwt-form";
+import { RwtService, RwtServed } from './rwt.service';
+import { ORM, IRwtField,  Fields, IRwtValidationError } from './interfaces';
+import { Choice, RwtForm } from './rwt-form';
+import { IRwtFormOptions } from './interfaces';
 
 declare var Lazy;
 
@@ -59,7 +61,6 @@ export function createFeModel(editableTemplates: any = {}, staticTemplates: any 
     // tslint:disable-next-line:max-line-length
     password: '<input [required]="required" [pattern]="pattern" [minlength]="minlength" [maxlength]="maxlength" [(ngModel)]="form.obj[fieldName]" class="form-control" placeholder="{{ field.name }}" type="password">',
   };
-  console.log('ciao');
   let typeTemplates = Lazy(defaultTemplates)
     .keys()
     .concat(Lazy(editableTemplates).keys())

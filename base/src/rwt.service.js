@@ -129,6 +129,7 @@ var RwtServed = (function () {
         this.rwt = rwt;
         this.eventHandlers = [];
         this.waiting = false;
+        this.orm = rwt.orm;
     }
     RwtServed.prototype.on = function (eventName, eventHandler) {
         var evt = this.rwt.on(eventName, eventHandler);

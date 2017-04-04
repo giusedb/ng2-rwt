@@ -1,5 +1,6 @@
 import { OnInit, ApplicationRef, ElementRef, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { ORM, RwtService } from './rwt.service';
+import { RwtService } from './rwt.service';
+import { ORM } from './interfaces';
 export interface IRwtAttributes {
     resource: string;
     filter: Object;

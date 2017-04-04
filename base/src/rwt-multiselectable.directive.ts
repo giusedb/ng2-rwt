@@ -1,5 +1,5 @@
 import { Directive, Input, HostListener } from '@angular/core';
-import { RwtService, ORM } from './rwt.service';
+import { RwtService } from './rwt.service';
 
 @Directive({
   selector: '[rwtMultiselectable]'

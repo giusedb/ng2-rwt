@@ -1,19 +1,9 @@
 import { Component, OnInit, OnDestroy, Input, Output, HostListener, ChangeDetectorRef, ComponentFactoryResolver, Type, EventEmitter, ViewChild, ViewChildDecorator, ElementRef } from '@angular/core';
-import { ORM, RwtService, RwtServed, IRwtField,  Fields, IRwtValidationError } from './rwt.service';
+import { RwtService, RwtServed } from './rwt.service';
+import { ORM, IRwtField,  Fields, IRwtValidationError } from './interfaces';
+import { IRwtFormOptions } from './interfaces';
 
 declare let Lazy;
-
-export interface IRwtFormOptions {
-  resource?: string;
-  record?: number;
-  object?: any;
-  editable?: boolean;
-  title?: string;
-  showFields?: Array<string>;
-  fieldDefs?: Fields;
-  values?: any;
-  verb?: string;
-};
 
 export class Choice {
   public id: any;

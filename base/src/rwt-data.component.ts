@@ -1,5 +1,6 @@
 import { Component, OnInit, ApplicationRef, ElementRef, Input, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { ORM, RwtService, IModel } from './rwt.service';
+import { RwtService } from './rwt.service';
+import { ORM, IModel } from './interfaces';
 
 declare var Lazy;
 
